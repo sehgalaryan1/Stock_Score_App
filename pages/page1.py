@@ -1,14 +1,30 @@
 import streamlit as st
-import pandas as pd
 
-# Print out the title for Page 1: View stock info dataframe
-st.title("Page 1: View Stock Data")
+st.markdown("🔍 **Stock Input & Score**")
 
-# Display the Pandas dataframe of the stock data from yfinance
-#  Note: The stock info dataframe is stored in a StreamLit "session state" that allows the data to be shared across
-#        the mutiple pages (ie, main.py, page1.py, page2.py and page4.py)
+if 'data' not in st.session_state:
+    st.warning("Go back to Home and pick a ticker.")
+else:
+    df = st.session_state.data
+    fw = st.session_state.fund_weight    # e.g. 0.6
+    tw = st.session_state.tech_weight     # e.g. 0.4
 
-st.dataframe(st.session_state.data, use_container_width=True)
+    # — Placeholder scoring logic — replace with your real models —
+    # Technical: normalize 1–10 from avg daily % change
+    tech_raw = df['Close'].pct_change().mean() * 100
+    tech_score = round(max(0, min(10, tech_raw + 5)), 1)
 
-# The dataframe can also be displayed as an editable interactive dataframe using the StreamLit data_editor function 
-#st.session_state.data = st.data_editor(st.session_state.data)
+    # Fundamental: dummy for now (swap your ML model output here)
+    fund_score = 7.3
+
+    # Combined weighted score
+    final_score = round(fw * fund_score + tw * tech_score, 1)
+    color = "🟢" if final_score >= 7 else "🟡" if final_score >= 4 else "🔴"
+
+    st.metric("Investment Rating (0–10)", f"{final_score} {color}")
+    st.write("**Sub-scores:**")
+    st.write(f"- Fundamental: {fund_score} / 10  ({int(fw*100)}%)")
+    st.write(f"- Technical:  {tech_score} / 10  ({int(tw*100)}%)")
+
+    with st.expander("Show raw price data"):
+        st.dataframe(df, use_container_width=True)
