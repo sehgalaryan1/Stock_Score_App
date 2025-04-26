@@ -1,8 +1,30 @@
+# main.py
 import streamlit as st
+import pandas as pd
+import yfinance as yf
 
-# ——— Introduction ———
+# ── SIDEBAR ──
+with st.sidebar:
+    st.header("📊 Investment Advisory App")
+    st.markdown("""
+    **Navigate:**  
+    - 🏠 Home  
+    - 🔍 Stock Input & Score  
+    - 📈 Technical Analysis  
+    - 🧾 Fundamentals  
+    - 🤖 Model Insights  
+    - 📚 Docs  
+    """)
+
+    st.subheader("🔍 Stock Input & Score")
+    ticker_symbol = st.text_input("Ticker (e.g. AAPL)", value="MSFT")
+    start_date    = st.date_input("Start Date",  pd.to_datetime("2024-01-01"))
+    end_date      = st.date_input("End Date",    pd.to_datetime("2024-12-31"))
+
+# ── MAIN CONTENT (Home / Intro) ──
 st.markdown("📊", unsafe_allow_html=True)
 st.title("Welcome to the Stock Advisory Tool")
+
 st.write("""
 **Investing is both an art and a science — and we’re here to make it smarter and simpler for you.**
 
@@ -12,16 +34,6 @@ That’s why we built the Stock Advisory Tool — a data-driven platform that he
 investment decisions with just a few clicks.
 """)
 
-st.markdown("🔍 **What This App Does**")
-st.write("""
-- **Fundamental analysis:** deep dives into company financials  
-- **Technical analysis:** price movements & market trends  
-
-Enter a ticker and see a **1–10 investment rating** based on:
-1. Historical ratios (ROE, profit margin, debt levels)  
-2. Recent market behavior (momentum, volatility, patterns)
-""")
-
 st.markdown("🧠 **How It Works**")
 st.write("""
 1. WRDS Compustat (2000–2024) for fundamentals  
@@ -29,38 +41,12 @@ st.write("""
 3. Hybrid scoring: rule-based logic + ML (logistic regression, decision trees)
 """)
 
-st.markdown("📈 **Why It Matters**")
-st.write("""
-- **What the company is** (fundamentally strong or weak)  
-- **How the market feels** (rising or falling)  
+st.markdown("🚀 **Get Started**")
+st.write(f"You’ve selected **{ticker_symbol}** from **{start_date}** to **{end_date}**.  ")
 
-Drill into ratios, indicators, and industry comparisons—all behind one clear rating.
-""")
-
-st.markdown("🚀 **Get Started Now**")
-st.write("""
-Use the side-bar to navigate:  
-1. 🔍 Stock Input & Score  
-2. 📈 Technical Analysis  
-3. 🧾 Fundamentals  
-4. 🤖 Model Insights  
-5. 📚 Docs / About
-""")
-# Sidebar inputs for ticker symbol and dates
-ticker_symbol = st.sidebar.text_input("Enter Stock Ticker (e.g., AAPL, MSFT)", value="MSFT")
-
-# Print update onb which ticker and dates
-st.write(f"You have selected *{ticker_symbol}*.")
-# st.markdown(''':red[Now click on] :blue-background[Page 1, 2 or 3] to the left to view analyses.''')
-
-# Access the stock data for the given tocker using the yfinance "download" function
-# Temporarily store data in "df" dataframe
-df = yf.download(ticker_symbol)
+# ── FETCH & STORE DATA ──
+df = yf.download(ticker_symbol, start=start_date, end=end_date)
 if df.empty:
-   st.error("No data found. Please check the ticker symbol or date range.")
-   st.stop()
-
-
-#  Note: The stock info dataframe (df) is stored in a StreamLit "session state" that allows the data to be shared across
-#        the mutiple pages (ie, main.py, page1.py, page2.py and page4.py)
+    st.error("No data found. Check your ticker or date range.")
+    st.stop()
 st.session_state.data = df
