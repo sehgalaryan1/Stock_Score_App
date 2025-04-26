@@ -1,4 +1,3 @@
-# main.py
 import streamlit as st
 import pandas as pd
 import yfinance as yf
@@ -18,35 +17,27 @@ with st.sidebar:
 
     st.subheader("🔍 Stock Input & Score")
     ticker_symbol = st.text_input("Ticker (e.g. AAPL)", value="MSFT")
-    start_date    = st.date_input("Start Date",  pd.to_datetime("2024-01-01"))
-    end_date      = st.date_input("End Date",    pd.to_datetime("2024-12-31"))
+
+    # — Replace date inputs with weight slider —
+    fund_weight = st.slider("Fundamental Weight (%)", min_value=0, max_value=100, value=50)
+    tech_weight = 100 - fund_weight
+    st.write(f"Technical Weight: **{tech_weight}%**")
 
 # ── MAIN CONTENT (Home / Intro) ──
 st.markdown("📊", unsafe_allow_html=True)
 st.title("Welcome to the Stock Advisory Tool")
+# … your intro copy here …
 
-st.write("""
-**Investing is both an art and a science — and we’re here to make it smarter and simpler for you.**
-
-In today’s fast-moving markets, successful investing requires more than just watching the headlines.  
-It demands a balanced view of a company’s long-term financial health and its short-term market momentum.  
-That’s why we built the Stock Advisory Tool — a data-driven platform that helps you make more informed  
-investment decisions with just a few clicks.
-""")
-
-st.markdown("🧠 **How It Works**")
-st.write("""
-1. WRDS Compustat (2000–2024) for fundamentals  
-2. Yahoo Finance API for real-time prices & indicators  
-3. Hybrid scoring: rule-based logic + ML (logistic regression, decision trees)
-""")
-
-st.markdown("🚀 **Get Started**")
-st.write(f"You’ve selected **{ticker_symbol}** from **{start_date}** to **{end_date}**.  ")
+# Echo selection & weights
+st.write(f"You’ve selected **{ticker_symbol}** with **{fund_weight}% Fundamental** and **{tech_weight}% Technical** weightings.")
 
 # ── FETCH & STORE DATA ──
-df = yf.download(ticker_symbol, start=start_date, end=end_date)
+df = yf.download(ticker_symbol)
 if df.empty:
-    st.error("No data found. Check your ticker or date range.")
+    st.error("No data found. Check your ticker.")
     st.stop()
-st.session_state.data = df
+
+# Save everything to session_state for downstream pages
+st.session_state.data        = df
+st.session_state.fund_weight = fund_weight / 100.0
+st.session_state.tech_weight = tech_weight / 100.0
