@@ -17,10 +17,8 @@ with st.sidebar:
 
     st.subheader("🔍 Stock Input & Score")
     ticker_symbol = st.text_input("Ticker (e.g. AAPL)", value="MSFT")
-
-    # Replace dates with a slider for fundamental weight
-    fund_weight = st.slider("Fundamental Weight (%)", 0, 100, 50)
-    tech_weight = 100 - fund_weight
+    fund_weight   = st.slider("Fundamental Weight (%)", 0, 100, 50)
+    tech_weight   = 100 - fund_weight
     st.markdown(f"**Technical Weight:** {tech_weight}%")
 
 # ── MAIN PAGE (Home / Introduction) ──
@@ -64,15 +62,25 @@ st.markdown("🚀 **Get Started**")
 st.write(f"You’ve selected **{ticker_symbol}**, with **{fund_weight}% Fundamental** and **{tech_weight}% Technical** weightings.")
 
 # ── FETCH & STORE DATA ──
-df = yf.download(ticker_symbol)
-if df.empty:
-    st.error("No data found. Check your ticker.")
+# 1) Load price history for technical features & charts
+df_price = yf.download(ticker_symbol)
+if df_price.empty:
+    st.error("No price data found. Check your ticker.")
+    st.stop()
+st.session_state.data = df_price
+
+# 2) Load combined feature dataset for fundamentals & engineered tech features
+try:
+    all_combined = pd.read_csv("data/combined.csv", parse_dates=["tech_date"])
+    df_combined = all_combined[all_combined["ticker"] == ticker_symbol]
+    if df_combined.empty:
+        st.warning("No fundamental data found for this ticker in combined.csv.")
+    else:
+        st.session_state.combined = df_combined
+except FileNotFoundError:
+    st.error("Could not find data/combined.csv; please upload it to the data/ folder.")
     st.stop()
 
-st.session_state.data        = df
+# 3) Store weightings as decimals
 st.session_state.fund_weight = fund_weight / 100.0
-st.session_state.tech_weight = tech_weight / 100.0
-# Save everything to session_state for downstream pages
-st.session_state.data        = df
-st.session_state.fund_weight = fund_weight / 100.0
-st.session_state.tech_weight = tech_weight / 100.0
+st.session_state.tech_weight = tech_weight  / 100.0
