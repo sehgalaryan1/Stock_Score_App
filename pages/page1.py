@@ -1,4 +1,5 @@
 import streamlit as st
+import numpy as np
 
 st.markdown("🔍 **Stock Input & Score**")
 
@@ -9,15 +10,15 @@ else:
     fw = st.session_state.fund_weight    # e.g. 0.6
     tw = st.session_state.tech_weight     # e.g. 0.4
 
-    # — Placeholder scoring logic — replace with your real models —
-    # Technical: normalize 1–10 from avg daily % change
-    tech_raw = df['Close'].pct_change().mean() * 100
-    tech_score = round(max(0, min(10, tech_raw + 5)), 1)
+    # — Technical score (normalize avg daily % change into 0–10) —
+    raw = df['Close'].pct_change().mean() * 100 + 5
+    # ensure it's a Python float and clip between 0 and 10
+    tech_score = round(float(np.clip(raw, 0, 10)), 1)
 
-    # Fundamental: dummy for now (swap your ML model output here)
+    # — Fundamental score (swap in your real ML output here) —
     fund_score = 7.3
 
-    # Combined weighted score
+    # — Combined weighted score —
     final_score = round(fw * fund_score + tw * tech_score, 1)
     color = "🟢" if final_score >= 7 else "🟡" if final_score >= 4 else "🔴"
 
