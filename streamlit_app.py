@@ -1,9 +1,9 @@
-# Import Streamlit
+# streamlit_app.py
 import streamlit as st
 
 # **** Page layout setup ****
 App_page_0 = st.Page(
-    "main.py",
+    "pages/main.py",
     title="🏠 Home",
     default=True
 )
@@ -33,9 +33,13 @@ pg = st.navigation(
     {
         "Start Here":       [App_page_0],
         "Analysis":         [App_page_1, App_page_2, App_page_3],
-        "Insights & Scores":[App_page_4],
-        "Docs & About":     [App_page_5],
+        "Insights":         [App_page_4],
+        "Docs":             [App_page_5],
     }
+)
+
+# **** Shared sidebar text ****
+st.sidebar.markdown("📋 Use the menu above to navigate between pages")
 )
 
 # **** text/images shared on all pages ****
