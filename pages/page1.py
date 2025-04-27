@@ -11,7 +11,7 @@ def load_models():
     return fund_model, tech_model
 
 def main():
-    st.title("🔍 Stock Input & Score (Live Data)")
+    st.title("🔍 Stock Input & Rating (Live Data)")
 
     # 1) Ticker & weights
     ticker = st.text_input("Enter Stock Ticker (e.g. AAPL)", "AAPL").upper()
@@ -19,10 +19,10 @@ def main():
     tech_weight = 100 - fund_weight
     st.write(f"**Fundamental:** {fund_weight}%   |   **Technical:** {tech_weight}%")
 
-    if st.button("🧮 Compute Risk Score"):
+    if st.button("🧮 Compute Investment Rating"):
         st.info("Fetching live data and running models…")
 
-        # --- 2) Fetch fundamentals ---
+        # --- Fetch fundamentals ---
         tk = yf.Ticker(ticker)
         try:
             info = tk.info
@@ -30,7 +30,6 @@ def main():
             st.error(f"Could not fetch fundamentals: {e}")
             return
 
-        # Map Yahoo keys → your model feature names
         fund_num_cols = [
             'current_assets','total_assets','common_equity_total',
             'current_debt','long_term_debt','depreciation_amortization',
@@ -65,12 +64,11 @@ def main():
         }
         df_f = pd.DataFrame([fund_data], columns=fund_num_cols + fund_cat_cols)
 
-        # --- 3) Fetch historical prices for technicals ---
+        # --- Fetch technicals ---
         hist = yf.download(ticker, period="1y", interval="1d", progress=False)
         if hist is None or hist.empty:
             st.error("No price history found.")
             return
-        # daily returns series
         daily_ret = hist['Close'].pct_change().dropna()
 
         tech_num_cols = [
@@ -91,24 +89,23 @@ def main():
         }
         df_t = pd.DataFrame([tech_data], columns=tech_num_cols + tech_cat_cols)
 
-        # --- 4) Predict and combine ---
+        # --- Predict ---
         fund_model, tech_model = load_models()
         fund_score = fund_model.predict(df_f)[0]
         tech_score = tech_model.predict(df_t)[0]
         final_score = (fund_score * fund_weight/100) + (tech_score * tech_weight/100)
         final_score = np.clip(final_score, 0, 10)
 
-        # --- 5) Display results ---
-        st.success(f"🎯 Investment Risk Score: **{final_score:.2f} / 10**")
-        st.write(f"- Fundamental Score: **{fund_score:.2f}**")
-        st.write(f"- Technical Score: **{tech_score:.2f}**")
+        # --- Display rating (higher = safer) ---
+        st.success(f"📊 **Investment Rating: {final_score:.2f} / 10** (higher = safer)")
 
         if final_score < 3:
-            st.write("🟢 **Low Risk**")
+            st.write("🔴 **Risky Investment**")
         elif final_score < 7:
-            st.write("🟡 **Medium Risk**")
+            st.write("🟡 **Moderate Investment**")
         else:
-            st.write("🔴 **High Risk**")
+            st.write("🟢 **Safer Investment**")
 
 if __name__ == "__main__":
     main()
+
