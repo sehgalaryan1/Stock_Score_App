@@ -2,6 +2,8 @@ import streamlit as st
 import page1    # Stock Input & Score page
 import page2    # Technical Analysis page
 import page3    # Fundamental Analysis page
+import page4    # Model & Score Explanation page
+import page5    # Documentation & Assumptions page
 
 st.set_page_config(
     page_title="Stock Advisory Tool",
@@ -16,6 +18,8 @@ choice = st.sidebar.radio("Go to", [
     "Stock Input & Score",
     "Technical Analysis",
     "Fundamental Analysis",
+    "Model & Score Explanation",
+    "Documentation & Assumptions",
 ])
 
 # --- Page Routing ---
@@ -61,7 +65,7 @@ You can also drill into detailed ratios and charts for deeper context.
 2. Review the 1–10 investment rating  
 3. Adjust fundamental vs. technical weightings to match your style  
 
-Use the **sidebar** to navigate to input, technical, or fundamental pages!
+Use the **sidebar** to navigate to any section!
 """)
 
 elif choice == "Stock Input & Score":
@@ -72,3 +76,10 @@ elif choice == "Technical Analysis":
 
 elif choice == "Fundamental Analysis":
     page3.main()
+
+elif choice == "Model & Score Explanation":
+    page4.main()
+
+elif choice == "Documentation & Assumptions":
+    page5.main()
+
