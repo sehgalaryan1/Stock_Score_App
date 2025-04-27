@@ -1,6 +1,6 @@
 import streamlit as st
 import yfinance as yf
-import plotly.express as px
+import plotly.graph_objects as go
 
 def main():
     st.title("📈 Technical Analysis (Simple)")
@@ -21,13 +21,21 @@ def main():
             st.error("No data found. Check the ticker and try again.")
             return
 
-        # Use the DataFrame index directly for the x‐axis
-        fig = px.line(
+        # Build a go.Figure directly
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
             x=df.index,
             y=df["Close"],
-            labels={"x": "Date", "y": "Close Price"},
-            title=f"{ticker} Closing Price (Last 6 Months)"
+            mode="lines",
+            name="Close Price"
+        ))
+        fig.update_layout(
+            title=f"{ticker} Closing Price (Last 6 Months)",
+            xaxis_title="Date",
+            yaxis_title="Close Price",
+            margin=dict(t=50, b=50)
         )
+
         st.plotly_chart(fig, use_container_width=True)
 
 if __name__ == "__main__":
