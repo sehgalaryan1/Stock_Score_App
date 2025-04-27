@@ -10,23 +10,24 @@ def main():
 - **Models**: Two separate scikit-learn pipelines
   - Fundamental model predicts a Piotroski F-score  
   - Technical model predicts a Sharpe ratio  
-  These are combined via user-chosen weights into a final 0–10 risk score.
+  These are combined via user-chosen weights into a final **0–10 Investment Rating**.
 
 ### Inputs & Targets
-- **Fundamental Features**:  
-  `current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, price_low_quarter`  
-- **Technical Features**:  
-  `monthly_return, month_trading_volume, stdev, avg_ret_6m, avg_ret_12m, vol_6m, vol_12m`  
-- **Categorical**:  
-  `gics_sector_x`  
+- **Fundamental Features** (18 numeric + 1 categorical):  
+  `current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, price_low_quarter, gics_sector_x`
+- **Technical Features** (7 numeric + 1 categorical):  
+  `monthly_return, month_trading_volume, stdev, avg_ret_6m, avg_ret_12m, vol_6m, vol_12m, gics_sector_x`
 - **Targets**:  
   - Fundamental → `f_score` (Piotroski)  
   - Technical → `sharpe_ratio`
 
-### What the Score Means
-- **0–3** → Low attractiveness (⚠️ consider selling)  
-- **4–6** → Neutral/hold (🟡 watch closely)  
-- **7–10** → High attractiveness (🟢 consider buying)  
+### What the Investment Rating Means
+- **0–3 → Risky Investment** 🔴  
+  Higher risk, consider selling or avoiding.
+- **4–6 → Moderate Investment** 🟡  
+  Balanced risk, hold or monitor closely.
+- **7–10 → Safer Investment** 🟢  
+  Lower risk, consider buying.
 
 ### Limitations
 - **Historical Lag**: Fundamentals update quarterly; may not reflect real-time events.  
@@ -40,3 +41,4 @@ This tool is provided **“as-is”** for educational purposes. Always conduct y
 
 if __name__ == "__main__":
     main()
+
