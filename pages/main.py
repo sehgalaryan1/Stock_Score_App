@@ -1,47 +1,74 @@
 import streamlit as st
+import page1    # Stock Input & Score page
+import page2    # Technical Analysis page
+import page3    # Fundamental Analysis page
 
-st.set_page_config(page_title="Stock Advisory Tool", page_icon="📊", layout="wide")
+st.set_page_config(
+    page_title="Stock Advisory Tool",
+    page_icon="📊",
+    layout="wide"
+)
 
-st.title("📊 Welcome to the Stock Advisory Tool")
+# --- Sidebar Navigation ---
+st.sidebar.title("🔗 Navigation")
+choice = st.sidebar.radio("Go to", [
+    "Home",
+    "Stock Input & Score",
+    "Technical Analysis",
+    "Fundamental Analysis",
+])
 
-st.markdown("""
+# --- Page Routing ---
+if choice == "Home":
+    st.title("📊 Welcome to the Stock Advisory Tool")
+    st.markdown("""
 ---
-### 📚 Introduction
+### 📚 Introduction  
 Investing is both an art and a science — and we’re here to make it smarter and simpler for you.
 
-In today’s fast-moving markets, successful investing requires more than just watching the headlines.
+In today’s fast-moving markets, successful investing requires more than just watching the headlines.  
 It demands a balanced view of a company’s **long-term financial health** and its **short-term market momentum**.
 
-That's why we built this tool — a data-driven platform that helps you make informed investment decisions in just a few clicks.
+That’s why we built the **Stock Advisory Tool** — a data-driven platform that helps you make more informed investment decisions with just a few clicks.
 
 ---
-### 🔍 What This App Does
-Our tool combines:
-- 📚 **Fundamental Analysis** (financial ratios like ROE, profit margin, debt levels)
-- 📈 **Technical Analysis** (price momentum, volatility, technical patterns)
+### 🔍 What This App Does  
+Our tool combines the power of:
+- 📚 **Fundamental Analysis** (deep dives into company financials)  
+- 📈 **Technical Analysis** (studying price movements and market trends)  
 
-to generate a **1–10 investment rating**.
-
----
-### 🧠 How It Works
-- Pulls historical financial data (WRDS Compustat 2000–2024)
-- Fetches real-time stock price and technical indicators (Yahoo Finance)
-- Blends rule-based logic and machine learning (Logistic Regression, Decision Trees)
+to generate a **1–10 investment rating** based on:
+1. **Historical financial strength** (key ratios like ROE, profit margin, debt levels)  
+2. **Recent market behavior** (momentum, volatility, technical patterns)
 
 ---
-### 📈 Why It Matters
-Our app helps you cut through the noise by showing:
-- How strong a company fundamentally is
-- How the market currently feels about it
+### 🧠 How It Works  
+- We pull historical financial data from WRDS Compustat (2000–2024) to assess fundamentals.  
+- We fetch real-time price and indicator data via the Yahoo Finance API to capture market sentiment.  
+- A hybrid ML system (logistic regression, decision trees, rule-based logic) blends these into a final risk score.
 
 ---
-### 🚀 Get Started
-1. Enter a stock ticker
-2. Review your investment rating
-3. Explore detailed analysis pages
-4. Adjust fundamental vs. technical weightings
+### 📈 Why It Matters  
+Investment decisions are never black and white. Our app cuts through the noise by showing:
+- **What** the company is (fundamentally strong or weak)  
+- **How** the market feels about it (rising or falling)  
+
+You can also drill into detailed ratios and charts for deeper context.
 
 ---
-### 🔗 Navigate Using Sidebar
-Use the sidebar 👉 to explore different analysis pages.
+### 🚀 Get Started Now  
+1. Enter a stock ticker  
+2. Review the 1–10 investment rating  
+3. Adjust fundamental vs. technical weightings to match your style  
+
+Use the **sidebar** to navigate to input, technical, or fundamental pages!
 """)
+
+elif choice == "Stock Input & Score":
+    page1.main()
+
+elif choice == "Technical Analysis":
+    page2.main()
+
+elif choice == "Fundamental Analysis":
+    page3.main()
