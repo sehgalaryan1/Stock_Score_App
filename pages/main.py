@@ -27,12 +27,32 @@ st.write(f"**Technical Weight:** {tech_weight}%")
 if st.button('🔍 Score Investment Risk'):
     st.info('Fetching features and running models...')
 
-    # --- Simulate feature inputs for now (until real data fetching is implemented) ---
-    # Assume both models expect 5 features each (adjust if your model expects different!)
-    dummy_fund_features = np.random.rand(1, 5)
-    dummy_tech_features = np.random.rand(1, 5)
+    # --- Define expected feature columns based on your models ---
+    fund_num_cols = [
+        'current_assets', 'total_assets', 'common_equity_total',
+        'current_debt', 'long_term_debt', 'depreciation_amortization',
+        'preferred_dividends', 'current_liabilities', 'total_liabilities',
+        'net_income', 'pretax_income', 'total_revenue',
+        'total_income_taxes', 'interest_expense_total',
+        'capital_expenditures', 'net_cash_flow_operating_activities',
+        'dividends_per_share_quarter', 'price_low_quarter'
+    ]
+    fund_cat_cols = ['gics_sector_x']
 
-    # --- Make Predictions ---
+    tech_num_cols = [
+        'monthly_return', 'month_trading_volume', 'stdev',
+        'avg_ret_6m', 'avg_ret_12m', 'vol_6m', 'vol_12m'
+    ]
+    tech_cat_cols = ['gics_sector_x']
+
+    # --- Simulate feature input ---
+    dummy_fund_features = pd.DataFrame([np.random.rand(len(fund_num_cols))], columns=fund_num_cols)
+    dummy_fund_features['gics_sector_x'] = 'Information Technology'  # Dummy sector
+
+    dummy_tech_features = pd.DataFrame([np.random.rand(len(tech_num_cols))], columns=tech_num_cols)
+    dummy_tech_features['gics_sector_x'] = 'Information Technology'  # Dummy sector
+
+    # --- Predict ---
     fund_score = fund_model.predict(dummy_fund_features)[0]
     tech_score = tech_model.predict(dummy_tech_features)[0]
 
