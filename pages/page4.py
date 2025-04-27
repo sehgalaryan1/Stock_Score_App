@@ -2,6 +2,7 @@ import streamlit as st
 import joblib
 import numpy as np
 import pandas as pd
+import yfinance as yf
 import plotly.graph_objects as go
 
 @st.cache_resource
@@ -11,19 +12,25 @@ def load_models():
     return fund_model, tech_model
 
 def main():
-    st.title("🤖 Model & Rating Explanation")
+    st.title("🤖 Model & Rating Explanation (Live Data)")
 
+    # 1) Inputs
     ticker = st.text_input("Enter Stock Ticker", "AAPL").upper()
     fund_weight = st.slider("Fundamental Weight (%)", 0, 100, 50)
     tech_weight = 100 - fund_weight
+    st.write(f"**Fundamental:** {fund_weight}%   |   **Technical:** {tech_weight}%")
 
-    # only simulate features here
-    if st.button("Explain Models & Rating"):
-        st.info("Simulating inputs and running models…")
+    if st.button("🔍 Explain Models & Rating"):
+        st.info("Fetching live data and running models…")
 
-        fund_model, tech_model = load_models()
+        # --- Fetch live fundamentals ---
+        tk = yf.Ticker(ticker)
+        try:
+            info = tk.info
+        except Exception as e:
+            st.error(f"Could not fetch fundamentals: {e}")
+            return
 
-        # 1) Define exactly the feature names your pipelines expect
         fund_num_cols = [
             'current_assets','total_assets','common_equity_total',
             'current_debt','long_term_debt','depreciation_amortization',
@@ -33,45 +40,77 @@ def main():
             'capital_expenditures','net_cash_flow_operating_activities',
             'dividends_per_share_quarter','price_low_quarter'
         ]
+        fund_cat_cols = ['gics_sector_x']
+
+        fund_data = {
+            'current_assets': info.get('currentAssets', np.nan),
+            'total_assets': info.get('totalAssets', np.nan),
+            'common_equity_total': info.get('totalStockholderEquity', np.nan),
+            'current_debt': info.get('currentDebt', np.nan),
+            'long_term_debt': info.get('longTermDebt', np.nan),
+            'depreciation_amortization': info.get('depreciationAndAmortization', np.nan),
+            'preferred_dividends': info.get('preferredStockDividend', np.nan),
+            'current_liabilities': info.get('currentLiabilities', np.nan),
+            'total_liabilities': info.get('totalLiab', np.nan) or info.get('totalLiabilities', np.nan),
+            'net_income': info.get('netIncomeToCommon', np.nan),
+            'pretax_income': info.get('pretaxIncome', np.nan),
+            'total_revenue': info.get('totalRevenue', np.nan),
+            'total_income_taxes': info.get('incomeTaxExpense', np.nan),
+            'interest_expense_total': info.get('interestExpense', np.nan),
+            'capital_expenditures': info.get('capitalExpenditures', np.nan),
+            'net_cash_flow_operating_activities': info.get('operatingCashflow', np.nan),
+            'dividends_per_share_quarter': info.get('dividendRate', np.nan),
+            'price_low_quarter': info.get('fiftyTwoWeekLow', np.nan),
+            'gics_sector_x': info.get('sector', 'Unknown')
+        }
+        df_f = pd.DataFrame([fund_data], columns=fund_num_cols + fund_cat_cols)
+
+        # --- Fetch live technicals ---
+        hist = yf.download(ticker, period="1y", interval="1d", progress=False)
+        if hist is None or hist.empty:
+            st.error("No price history found.")
+            return
+        daily_ret = hist['Close'].pct_change().dropna()
+
         tech_num_cols = [
             'monthly_return','month_trading_volume','stdev',
             'avg_ret_6m','avg_ret_12m','vol_6m','vol_12m'
         ]
-        cat_col = 'gics_sector_x'
+        tech_cat_cols = ['gics_sector_x']
 
-        # 2) Simulate dummy DataFrames with correct column names
-        df_f = pd.DataFrame(
-            [np.random.rand(len(fund_num_cols))],
-            columns=fund_num_cols
-        )
-        df_f[cat_col] = 'Information Technology'
+        tech_data = {
+            'monthly_return': daily_ret.resample('M').sum().iloc[-1],
+            'month_trading_volume': hist['Volume'].resample('M').sum().iloc[-1],
+            'stdev': daily_ret.std(),
+            'avg_ret_6m': daily_ret.rolling(window=126, min_periods=1).mean().iloc[-1],
+            'avg_ret_12m': daily_ret.rolling(window=252, min_periods=1).mean().iloc[-1],
+            'vol_6m': daily_ret.rolling(window=126, min_periods=1).std().iloc[-1],
+            'vol_12m': daily_ret.rolling(window=252, min_periods=1).std().iloc[-1],
+            'gics_sector_x': info.get('sector', 'Unknown')
+        }
+        df_t = pd.DataFrame([tech_data], columns=tech_num_cols + tech_cat_cols)
 
-        df_t = pd.DataFrame(
-            [np.random.rand(len(tech_num_cols))],
-            columns=tech_num_cols
-        )
-        df_t[cat_col] = 'Information Technology'
-
-        # 3) Make predictions
+        # --- Run predictions ---
+        fund_model, tech_model = load_models()
         fund_score = fund_model.predict(df_f)[0]
         tech_score = tech_model.predict(df_t)[0]
         final_score = (fund_score * fund_weight/100) + (tech_score * tech_weight/100)
         final_score = np.clip(final_score, 0, 10)
 
-        # 4) Display breakdown
+        # --- Display breakdown ---
         st.subheader("📈 Rating Breakdown")
         st.write(f"- Fundamental Score: **{fund_score:.2f} / 10**")
         st.write(f"- Technical Score: **{tech_score:.2f} / 10**")
         st.write(f"- **Combined Investment Rating: {final_score:.2f} / 10** (higher = safer)")
 
-        # 5) Feature importances (if available)
+        # --- Feature importances (if available) ---
         st.subheader("🔎 Feature Importances")
-        # Fundamental
+
         if hasattr(fund_model, "feature_importances_"):
             imp = fund_model.feature_importances_
             df_imp = pd.DataFrame({
                 "feature": fund_num_cols,
-                "importance": imp[: len(fund_num_cols)]
+                "importance": imp[:len(fund_num_cols)]
             }).sort_values("importance", ascending=False)
             fig = go.Figure(go.Bar(
                 x=df_imp["importance"],
@@ -80,21 +119,16 @@ def main():
                 text=df_imp["importance"].map(lambda v: f"{v:.3f}"),
                 textposition="auto"
             ))
-            fig.update_layout(
-                title="Fundamental Model Importances",
-                yaxis_title="",
-                margin=dict(l=150)
-            )
+            fig.update_layout(title="Fundamental Model Importances", yaxis_title="", margin=dict(l=150))
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.write("Fundamental model does not expose `feature_importances_`.")
 
-        # Technical
         if hasattr(tech_model, "feature_importances_"):
             imp = tech_model.feature_importances_
             df_imp = pd.DataFrame({
                 "feature": tech_num_cols,
-                "importance": imp[: len(tech_num_cols)]
+                "importance": imp[:len(tech_num_cols)]
             }).sort_values("importance", ascending=False)
             fig = go.Figure(go.Bar(
                 x=df_imp["importance"],
@@ -103,15 +137,10 @@ def main():
                 text=df_imp["importance"].map(lambda v: f"{v:.3f}"),
                 textposition="auto"
             ))
-            fig.update_layout(
-                title="Technical Model Importances",
-                yaxis_title="",
-                margin=dict(l=150)
-            )
+            fig.update_layout(title="Technical Model Importances", yaxis_title="", margin=dict(l=150))
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.write("Technical model does not expose `feature_importances_`.")
 
 if __name__ == "__main__":
     main()
-
