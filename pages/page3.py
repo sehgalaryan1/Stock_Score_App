@@ -1,54 +1,34 @@
 import streamlit as st
 import yfinance as yf
-import pandas as pd
-import plotly.graph_objects as go
+import plotly.express as px
 
 def main():
-    st.title("🧾 Fundamental Analysis")
+    st.title("📈 Technical Analysis (Simple)")
 
-    # 1) Ticker input
     ticker = st.text_input("Enter Stock Ticker", "AAPL").upper()
     if not ticker:
         return
 
-    # 2) Fetch fundamentals
-    if st.button("Fetch Fundamentals"):
-        with st.spinner(f"Loading fundamentals for {ticker}…"):
-            tk = yf.Ticker(ticker)
-            info = tk.info
+    if st.button("Fetch Price Chart"):
+        with st.spinner(f"Loading 6 months of daily data for {ticker}…"):
+            try:
+                df = yf.download(ticker, period="6mo", interval="1d", progress=False)
+            except Exception as e:
+                st.error(f"Error fetching data: {e}")
+                return
 
-        # 3) Extract metrics (multiplying decimals to % where appropriate)
-        metrics = {
-            'Return on Equity (ROE %)': info.get('returnOnEquity', 0) * 100,
-            'Debt-to-Equity Ratio': info.get('debtToEquity', None),
-            'EPS Growth (QoQ %)': info.get('earningsQuarterlyGrowth', 0) * 100,
-            'PE Ratio': info.get('trailingPE', None),
-            'Profit Margin (%)': info.get('profitMargins', 0) * 100
-        }
+        if df is None or df.empty:
+            st.error("No data found. Check the ticker and try again.")
+            return
 
-        # 4) Build DataFrame
-        df = pd.DataFrame.from_dict(metrics, orient='index', columns=['Value'])
-        df.index.name = 'Metric'
-        df = df.reset_index()
-
-        # 5) Display table
-        st.table(df.style.format({'Value': "{:,.2f}"}))
-
-        # 6) Bar chart
-        fig = go.Figure(go.Bar(
-            x=df['Metric'],
-            y=df['Value'],
-            text=df['Value'].map(lambda v: f"{v:,.1f}"),
-            textposition='auto'
-        ))
-        fig.update_layout(
-            title=f"{ticker} Key Financial Ratios",
-            yaxis_title="Value",
-            xaxis_tickangle=-45,
-            margin=dict(t=50, b=150)
+        # Use the DataFrame index directly for the x‐axis
+        fig = px.line(
+            x=df.index,
+            y=df["Close"],
+            labels={"x": "Date", "y": "Close Price"},
+            title=f"{ticker} Closing Price (Last 6 Months)"
         )
         st.plotly_chart(fig, use_container_width=True)
 
 if __name__ == "__main__":
     main()
-   
