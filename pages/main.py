@@ -1,85 +1,43 @@
 import streamlit as st
-import pandas as pd
-import yfinance as yf
+from model_utils         import load_models
+from feature_engineering import make_tech_features, make_fund_features
 
-# ── SIDEBAR ──
-with st.sidebar:
-    st.header("📊 Investment Advisory App")
-    st.markdown("""
-    **Navigate:**  
-    - 🏠 Home  
-    - 🔍 Stock Input & Score  
-    - 📈 Technical Analysis  
-    - 🧾 Fundamentals  
-    - 🤖 Model Insights  
-    - 📚 Docs  
-    """)
+st.markdown("🔍 **Stock Input & Score**")
 
-    st.subheader("🔍 Stock Input & Score")
-    ticker_symbol = st.text_input("Ticker (e.g. AAPL)", value="MSFT")
-    fund_weight   = st.slider("Fundamental Weight (%)", 0, 100, 50)
-    tech_weight   = 100 - fund_weight
-    st.markdown(f"**Technical Weight:** {tech_weight}%")
+if "data" not in st.session_state or "combined" not in st.session_state:
+    st.warning("Please go back to Home and select a ticker first.")
+else:
+    df_price    = st.session_state.data
+    df_combined = st.session_state.combined
+    fw, tw      = st.session_state.fund_weight, st.session_state.tech_weight
 
-# ── MAIN PAGE (Home / Introduction) ──
-st.markdown("📊", unsafe_allow_html=True)
-st.title("Welcome to the Stock Advisory Tool")
-st.write("""
-**Investing is both an art and a science — and we’re here to make it smarter and simpler for you.**
+    # Build features
+    X_tech = make_tech_features(df_price)
+    X_fund = make_fund_features(df_combined)
 
-In today’s fast-moving markets, successful investing requires more than just watching the headlines.  
-It demands a balanced view of a company’s long-term financial health and its short-term market momentum.  
-That’s why we built the Stock Advisory Tool — a data-driven platform that helps you make more informed  
-investment decisions with just a few clicks.
-""")
+    # Load models
+    fund_model, tech_model = load_models()
 
-st.markdown("🔍 **What This App Does**")
-st.write("""
-- **Fundamental analysis:** deep dives into company financials  
-- **Technical analysis:** price movements & market trends  
+    # Predict
+    tech_preds = tech_model.predict(X_tech)
+    fund_preds = fund_model.predict(X_fund)
 
-Enter a ticker and see a **1–10 investment rating** based on:  
-1. Historical ratios (ROE, profit margin, debt levels)  
-2. Recent market behavior (momentum, volatility, patterns)
-""")
+    # Latest scores
+    tech_score = float(tech_preds[-1])
+    fund_score = float(fund_preds[-1])
 
-st.markdown("🧠 **How It Works**")
-st.write("""
-1. WRDS Compustat (2000–2024) for fundamentals  
-2. Yahoo Finance API for real-time prices & indicators  
-3. Hybrid scoring: rule-based logic + ML (logistic regression, decision trees)
-""")
+    # Combine
+    final_score = round(fw * fund_score + tw * tech_score, 1)
+    emoji       = "🟢" if final_score >= 7 else "🟡" if final_score >= 4 else "🔴"
 
-st.markdown("📈 **Why It Matters**")
-st.write("""
-- **What the company is** (fundamentally strong or weak)  
-- **How the market feels** (rising or falling)  
+    # Display
+    st.metric("Investment Rating (0–10)", f"{final_score} {emoji}")
+    st.write("**Sub-scores:**")
+    st.write(f"- Fundamental: {fund_score:.1f} / 10  ({int(fw*100)}%)")
+    st.write(f"- Technical:  {tech_score:.1f} / 10  ({int(tw*100)}%)")
 
-Drill into ratios, indicators, and industry comparisons—all behind one clear rating.
-""")
-
-st.markdown("🚀 **Get Started**")
-st.write(f"You’ve selected **{ticker_symbol}**, with **{fund_weight}% Fundamental** and **{tech_weight}% Technical** weightings.")
-
-# ── FETCH & STORE DATA ──
-# 1) Load price history for technical features & charts
-df_price = yf.download(ticker_symbol)
-if df_price.empty:
-    st.error("No price data found. Check your ticker.")
-    st.stop()
-st.session_state.data = df_price
-
-# 2) Load combined feature dataset for fundamentals & engineered tech features
-try:
-    all_combined = pd.read_csv("data/combined.csv", parse_dates=["tech_date"])
-    df_combined = all_combined[all_combined["ticker"] == ticker_symbol]
-    if df_combined.empty:
-        st.warning("No fundamental data found for this ticker in combined.csv.")
-    else:
-        st.session_state.combined = df_combined
-except FileNotFoundError:
-    st.error("Could not find data/combined.csv; please upload it to the data/ folder.")
-    st.stop()
+    with st.expander("Show raw price data"):
+        st.dataframe(df_price, use_container_width=True)
 
 # 3) Store weightings as decimals
 st.session_state.fund_weight = fund_weight / 100.0
