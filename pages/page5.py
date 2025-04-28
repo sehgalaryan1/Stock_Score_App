@@ -36,5 +36,8 @@ def main():
     st.markdown("---")
     st.markdown(
         "<span style='color:gray;'>**Disclaimer:** This tool is provided “as-is” for educational purposes. Always conduct your own due diligence and consult a financial advisor before making investment decisions.</span>",
-        unsafe_allow_html=Tr
+        unsafe_allow_html=True
+    )
 
+if __name__ == "__main__":
+    main()
