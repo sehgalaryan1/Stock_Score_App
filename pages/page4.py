@@ -145,5 +145,18 @@ def main():
         else:
             st.write("Technical model does not expose `feature_importances_`.")
 
+st.markdown("""
+
+### Inputs & Targets
+- **Fundamental Features** (18 numeric + 1 categorical):  
+  `current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, price_low_quarter, gics_sector_x`
+- **Technical Features** (7 numeric + 1 categorical):  
+  `monthly_return, month_trading_volume, stdev, avg_ret_6m, avg_ret_12m, vol_6m, vol_12m, gics_sector_x`
+- **Targets**:  
+  - Fundamental → `f_score` (Piotroski)  
+  - Technical → `sharpe_ratio`
+  """
+)
+
 if __name__ == "__main__":
     main()
