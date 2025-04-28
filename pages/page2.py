@@ -138,7 +138,7 @@ def main():
         st.subheader("30-Day Rolling Sharpe Ratio")
         try:
             ret = df["Close"].pct_change().dropna()
-            sr = ret.rolling(window=30).mean() / ret.rolling(window=30).std()
+            sr = ret.rolling(window=30).mean() / ret.rolling(window=30).std() * (12**0.5)
             if not sr.empty:
                 st.line_chart(sr)
             else:
