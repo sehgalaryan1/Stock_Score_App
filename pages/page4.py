@@ -12,7 +12,7 @@ def main():
     - Fundamental model predicts a Piotroski F-score
     - Technical model predicts a Sharpe ratio
 
-These are combined via user-chosen weights into a final **0–10 Investment Rating**.
+These are combined via user-chosen weights into a final **1–10 Investment Rating**.
     """)
 
     st.divider()
