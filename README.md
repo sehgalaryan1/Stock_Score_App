@@ -10,9 +10,9 @@ An interactive, multi-page Streamlit dashboard that combines fundamental and tec
 ---
 
 ## 👥 Team Members
-- Aryan Sehgal  
+- Aryan Sehgal
+- Hyunjin Yu 
 - Raskirt Bhatia  
-- Hyunjin Yu  
 
 ---
 
