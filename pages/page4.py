@@ -13,7 +13,7 @@ def load_models():
     return fund_model, tech_model, scaler
 
 def main():
-    st.title("🤖 Model & Rating Explanation (Live Data)")
+    st.title("🤖 Model & Rating Explanation")
 
     # 1) Inputs
     ticker = st.text_input("Enter Stock Ticker", "AAPL").upper()
