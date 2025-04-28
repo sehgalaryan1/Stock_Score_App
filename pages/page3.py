@@ -138,16 +138,28 @@ def main():
         )
 
         def style_row(row):
-            # make a list of "" for every column
             styles = [""] * len(row)
-            # find the position of the "Company" column
             idx = list(row.index).index("Company")
-            # apply your green/red logic
-            if pd.notna(row["Company"]) and row["Company"] > row["Industry Avg"]:
-                styles[idx] = "background-color: lightgreen"
-            else:
-                styles[idx] = "background-color: salmon"
+            
+            metric = row["Metric"]
+            
+            # Define metrics that need inverted logic (lower is better)
+            lower_is_better = ["Debt-to-Equity"]
+            
+            if pd.notna(row["Company"]) and pd.notna(row["Industry Avg"]):
+                if metric in lower_is_better:
+                    if row["Company"] < row["Industry Avg"]:
+                        styles[idx] = "background-color: green"
+                    else:
+                        styles[idx] = "background-color: salmon"
+                else:
+                    if row["Company"] > row["Industry Avg"]:
+                        styles[idx] = "background-color: green"
+                    else:
+                        styles[idx] = "background-color: salmon"
+                        
             return styles
+
         
         styled = (
             df_display.style
