@@ -1,6 +1,6 @@
 # StockScore: A Multi-Page Streamlit App for Stock Analysis
 
-An interactive, multi-page Streamlit dashboard that combines fundamental and technical analysis to dynamically rate stocks using live Yahoo Finance data and machine learning models.
+An interactive, multi-page Streamlit dashboard that combines fundamental and technical analysis to dynamically rate stocks using live Yahoo Finance data and pre-trained machine learning models.
 
 ---
 
@@ -17,35 +17,33 @@ An interactive, multi-page Streamlit dashboard that combines fundamental and tec
 ---
 
 ## 📝 Project Description
-StockScore allows users to input a stock ticker and assign a weight (%) to fundamental analysis. The remaining weight is automatically assigned to technical analysis. The app retrieves real-time data from Yahoo Finance and provides a comprehensive breakdown across multiple pages.
+StockScore lets you enter any stock ticker and choose a weight (%) for **fundamental analysis**; the remaining weight is applied to **technical analysis**. The app fetches live data from Yahoo Finance, runs two separate ML pipelines, and delivers a combined **0–10 Investment Rating** (higher = safer).
 
 ---
 
 ## 🗂 App Structure
 1. **Home Page** (`main.py`)  
-   Introduction and navigation overview.  
-2. **Page 1** (`page1.py`)  
-   Stock input form, selection of fundamental weight, and quick score summary.  
-3. **Page 2** (`page2.py`)  
-   In-depth technical analysis (moving averages, RSI, MACD, etc.).  
-4. **Page 3** (`page3.py`)  
-   In-depth fundamental analysis (financial ratios, earnings, balance sheet).  
-5. **Page 4** (`page4.py`)  
-   ML models’ predictions and combined final score.  
-6. **Page 5** (`page5.py`)  
-   Documentation, assumptions, and limitations of the project.  
+   Introduction and sidebar navigation overview.  
+2. **Page 1: Stock Input & Rating** (`page1.py`)  
+   Enter a ticker, set fundamental vs. technical weight, and compute a live-data Investment Rating.  
+3. **Page 2: Technical Analysis** (`page2.py`)  
+   Simple closing-price chart (last 6 months) via Streamlit’s built-in `st.line_chart`.  
+4. **Page 3: Fundamental Analysis** (`page3.py`)  
+   Key financial ratios (ROE, Debt-to-Equity, EPS growth, P/E, Profit Margin) in a table and bar chart.  
+5. **Page 4: Model & Rating Explanation** (`page4.py`)  
+   Runs the same live inputs through both ML pipelines, shows individual model scores, combined rating, and feature importances.  
+6. **Page 5: Documentation & Assumptions** (`page5.py`)  
+   Detailed description of data sources, features, model targets, rating interpretation, and limitations.  
 
 ---
 
 ## 🤖 Machine Learning Models
-The app uses two separate ML models:
-
-- **Fundamental Model**  
+- **Fundamental Model** (`model/fund_model.pkl`)  
   Predicts a stock rating based on key financial indicators.  
-- **Technical Model**  
-  Predicts a stock rating based on technical chart patterns and momentum indicators.  
+- **Technical Model** (`model/tech_model.pkl`)  
+  Predicts a stock rating based on price-momentum and volume metrics.  
 
-A final combined rating (on a scale from 1 to 10) is generated based on the user-assigned weightages.
+A final combined rating (0–10) is generated based on the user-assigned weightages.
 
 ---
 
@@ -60,11 +58,12 @@ A final combined rating (on a scale from 1 to 10) is generated based on the user
   page5.py
 
 /model/
-  fundamental_model.pkl
-  technical_model.pkl
+  fund_model.pkl
+  tech_model.pkl
 
 /data/
   … (All datasets used for model training and evaluation)
 
 README.md
 requirements.txt
+
