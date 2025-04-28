@@ -60,6 +60,7 @@ A final combined rating (0–10) is generated based on the user-assigned weighta
 /model/
   fund_model.pkl
   tech_model.pkl
+  minmax_scaler.pkl
 
 /data/
   … (All datasets used for model training and evaluation)
