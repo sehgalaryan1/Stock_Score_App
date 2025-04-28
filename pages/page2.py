@@ -1,7 +1,7 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
-import numpy as np  # numpy import 추가
+import numpy as np
 
 def main():
     st.title("📈 Technical Analysis")
@@ -21,7 +21,7 @@ def main():
 
         # 날짜 포맷 정리
         df = df.reset_index()
-        df["Date"] = pd.to_datetime(df["Date"]).dt.date
+        df["Date"] = pd.to_datetime(df["Date"])  # 꼭 datetime 포맷 유지
         df.set_index("Date", inplace=True)
 
         # --- Closing Price Chart ---
@@ -35,17 +35,12 @@ def main():
             # 1. Calculate daily return
             daily_ret = df["Close"].pct_change().dropna()
 
-            # 2. Resample to monthly return (마지막 한 달 수익률)
-            daily_ret.index = pd.to_datetime(daily_ret.index)  # resample하려면 datetime 인덱스 필요
+            # 2. Resample to monthly returns
             monthly_returns = daily_ret.resample('M').sum()
 
+            # 3. Safe display
             if not monthly_returns.empty:
                 monthly_return_last = monthly_returns.iloc[-1]
-            else:
-                monthly_return_last = np.nan
-
-            # 3. Safe display
-            if not pd.isna(monthly_return_last):
                 st.metric(label="Monthly Return", value=f"{monthly_return_last:.2%}")
             else:
                 st.metric(label="Monthly Return", value="N/A")
