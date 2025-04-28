@@ -22,7 +22,11 @@ def main():
         daily_ret = hist['Close'].pct_change().dropna()
 
         # --- Calculate Metrics ---
-        monthly_return = daily_ret.resample('M').sum().iloc[-1]  # 마지막 1개월 누적 수익률
+        monthly_return = daily_ret.resample('M').sum()
+        if not monthly_return.empty:
+            monthly_return = monthly_return.iloc[-1]
+        else:
+            monthly_return = np.nan  # 마지막 1개월 누적 수익률
         month_trading_volume = hist['Volume'].resample('M').sum().iloc[-1]  # 마지막 1개월 거래량
         stdev = daily_ret.std()  # 전체 1년 수익률 변동성 (σ)
         avg_ret_6m = daily_ret.rolling(window=126, min_periods=1).mean().iloc[-1]  # 최근 6개월 평균 수익률
@@ -31,7 +35,7 @@ def main():
         # --- Display Metrics ---
         st.subheader(f"📊 Key Technical Metrics for {ticker}")
         metrics = {
-    "Monthly Return (Last Month)": f"{monthly_return:.2%}" if monthly_return is not None and not pd.isna(monthly_return) else "N/A",
+    "Monthly Return (Last Month)": f"{monthly_return:.2%}" if pd.notna(monthly_return) else "N/A",
     "Monthly Trading Volume": f"{month_trading_volume:,.0f}" if month_trading_volume is not None and not pd.isna(month_trading_volume) else "N/A",
     "Standard Deviation (1Y)": f"{stdev:.2%}" if stdev is not None and not pd.isna(stdev) else "N/A",
     "Average Return (6M)": f"{avg_ret_6m:.2%}" if avg_ret_6m is not None and not pd.isna(avg_ret_6m) else "N/A",
