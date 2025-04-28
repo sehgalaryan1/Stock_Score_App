@@ -57,61 +57,115 @@ def load_ticker_list():
         'TMDX', 'FBP', 'PRVA', 'UCB', 'ABM', 'FULT'
     ]
     return tickers
+
+@st.cache_data
+def fetch_ticker_info(ticker):
+    tk = yf.Ticker(ticker)
+    info = tk.info or {}
+    qf   = tk.quarterly_financials   # DataFrame: cols are quarters
+    return info, qf
+
+def compute_metrics(info, qf):
+    """Return a dict of your ratios plus YoY changes where available."""
+    # core ratios from info
+    roe   = info.get('returnOnEquity', np.nan)*100
+    roa   = info.get('returnOnAssets',  np.nan)*100
+    de    = info.get('debtToEquity',    np.nan)
+    pm    = info.get('profitMargins',   np.nan)*100
+    pe    = info.get('trailingPE',      np.nan)
+    eps_q = info.get('earningsQuarterlyGrowth', np.nan)*100
     
+    return {
+      'Return on Equity (%)': roe,
+      'Return on Assets (%)': roa,
+      'Debt-to-Equity':       de,
+      'Profit Margin (%)':    pm,
+      'P/E Ratio':            pe,
+      'EPS Growth QoQ (%)':   eps_q,
+      # could add more YoY computations here if we get the raw values in qf…
+    }
+
+def industry_averages(universe, industry, metric_keys):
+    """Loop the ticker universe, grab each ticker that matches `industry`, compute average per metric."""
+    rows = []
+    for tk in universe:
+        info, qf = fetch_ticker_info(tk)
+        if info.get('industry') == industry:
+            rows.append(compute_metrics(info, qf))
+    df_ind = pd.DataFrame(rows)
+    return df_ind.mean()
+
+# —————— Streamlit page ——————
+
 def main():
     st.title("🧾 Fundamental Analysis")
 
-    # 1) Ticker input using dropdown + type filter
+    # 1) ticker
     tickers = load_ticker_list()
-    ticker = st.selectbox(
-        "Select or Type a Stock Ticker", 
-        options=tickers, 
-        index=tickers.index('AAPL'), 
-        help="Start typing to quickly filter the options."
+    ticker  = st.selectbox(
+      "Select or Type a Stock Ticker",
+      options=tickers,
+      index=tickers.index("AAPL"),
+      help="Start typing…"
     )
 
-    # 2) Fetch fundamentals
     if st.button("Fetch Fundamentals"):
-        with st.spinner(f"Loading fundamentals for {ticker}…"):
-            tk = yf.Ticker(ticker)
-            info = tk.info
+        st.info(f"Loading {ticker}…")
+        info, qf = fetch_ticker_info(ticker)
+        sector   = info.get("sector","N/A")
+        industry = info.get("industry","N/A")
+        st.write(f"**Sector:** {sector}   |   **Industry:** {industry}")
 
-        # 3) Extract metrics (multiplying decimals to % where appropriate)
-        metrics = {
-            'Return on Equity (ROE %)': info.get('returnOnEquity', 0) * 100,
-            'Debt-to-Equity Ratio': info.get('debtToEquity', None),
-            'EPS Growth (QoQ %)': info.get('earningsQuarterlyGrowth', 0) * 100,
-            'PE Ratio': info.get('trailingPE', None),
-            'Profit Margin (%)': info.get('profitMargins', 0) * 100
-        }
+        # 2) compute your company metrics
+        comp = compute_metrics(info, qf)
 
-        # 4) Build DataFrame
-        df = pd.DataFrame.from_dict(metrics, orient='index', columns=['Value'])
-        df.index.name = 'Metric'
-        df = df.reset_index()
+        # 3) compute industry averages
+        ind_avg = industry_averages(tickers, industry, list(comp.keys()))
 
-        # 5) Display table
-        st.table(df.style.format({'Value': "{:,.2f}"}))
+        # 4) put it all in a DataFrame, reindex from 1…
+        df = (
+          pd.DataFrame.from_dict({
+            'Company': comp,
+            'Industry Avg': ind_avg
+          })
+          .reset_index()
+          .rename(columns={'index':'Metric'})
+        )
+        df.index = df.index + 1
 
-        # 6) Bar chart
-        fig = go.Figure(go.Bar(
-            x=df['Metric'],
-            y=df['Value'],
-            text=df['Value'].map(lambda v: f"{v:,.1f}"),
-            textposition='auto'
+        # 5) add YoY/QoQ change column (for EPS Growth we have it, others can be blank or computed)
+        df['Change vs Prev Qtr'] = ''
+        df.loc[df['Metric']=="EPS Growth QoQ (%)", 'Change vs Prev Qtr'] = df.loc[df['Metric']=="EPS Growth QoQ (%)","Company"].astype(float)
+
+        # 6) display with conditional formatting
+        def color_row(val, indval):
+            return ['background-color: lightgreen' if v>iv else 'background-color: salmon'
+                    for v, iv in zip(val, indval)]
+
+        styled = (
+          df.style
+            .format({ 'Company': "{:,.2f}", 'Industry Avg': "{:,.2f}" })
+            .apply(lambda row: color_row([row['Company']], [row['Industry Avg']]), axis=1, subset=['Company'])
+        )
+        st.table(styled)
+
+        # 7) bar chart with industry avg overlay
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=df['Metric'], y=df['Company'],
+            name=ticker
+        ))
+        fig.add_trace(go.Bar(
+            x=df['Metric'], y=df['Industry Avg'],
+            name=f"{industry} Avg"
         ))
         fig.update_layout(
-            title=f"{ticker} Key Financial Ratios",
-            yaxis_title="Value",
+            barmode='group',
+            title=f"{ticker} vs {industry} Averages",
             xaxis_tickangle=-45,
             margin=dict(t=50, b=150)
         )
         st.plotly_chart(fig, use_container_width=True)
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
-
-
-if __name__ == "__main__":
-    main()
-
