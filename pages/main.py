@@ -13,14 +13,6 @@ st.set_page_config(
 
 # --- Sidebar Navigation ---
 st.sidebar.title("🔗 Navigation")
-
-# --- QR Code ---
-url = "https://your-website.com"
-qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={url}&size=150x150"
-st.sidebar.image(qr_api, caption="Scan to visit our site", use_column_width=False)
-st.sidebar.markdown(f"[Go to website]({url})")
-
-# --- Navigation Links ---
 choice = st.sidebar.radio("Go to", [
     "Home",
     "Stock Input & Score",
@@ -29,6 +21,11 @@ choice = st.sidebar.radio("Go to", [
     "Model & Rating Explanation",
     "Limitations & Next Steps",
 ])
+
+# --- QR Code (after navigation) ---
+url = "https://your-website.com"
+qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={url}&size=150x150"
+st.sidebar.image(qr_api, caption="Scan to visit our site", use_column_width=False)
 
 # --- Page Routing ---
 if choice == "Home":
@@ -67,25 +64,5 @@ Markets move fast. This app helps you:
 
 ---
 ### 🚀 Quick Start
-1. Go to **Stock Input & Score** in the sidebar.  
-2. Enter your ticker and pick the balance between fundamentals vs. technicals.  
-3. Click **Compute Investment Rating** to get your 1–10 score.  
-4. Explore other pages for detailed charts, ratios, and model insights.
+1. Go to **Stock Input & Score** in the sidebar.
 
-Use the sidebar to hop between pages whenever you like!
-""")
-
-elif choice == "Stock Input & Score":
-    page1.main()
-
-elif choice == "Technical Analysis":
-    page2.main()
-
-elif choice == "Fundamental Analysis":
-    page3.main()
-
-elif choice == "Model & Rating Explanation":
-    page4.main()
-
-elif choice == "Limitations & Next Steps":
-    page5.main()
