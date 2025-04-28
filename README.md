@@ -64,6 +64,10 @@ A final combined rating (0–10) is generated based on the user-assigned weighta
 /data/
   … (All datasets used for model training and evaluation)
 
-README.md
+/notebook/
+  … (Jupyter notebook)
+
+README.md  
 requirements.txt
+
 
