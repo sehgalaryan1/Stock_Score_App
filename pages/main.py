@@ -3,7 +3,7 @@ import page1    # Stock Input & Score page
 import page2    # Technical Analysis page
 import page3    # Fundamental Analysis page
 import page4    # Model & Rating Explanation page
-import page5    # Documentation & Assumptions page
+import page5    # Limitations & Next Steps page
 
 st.set_page_config(
     page_title="Stock Advisory Tool",
@@ -19,7 +19,7 @@ choice = st.sidebar.radio("Go to", [
     "Technical Analysis",
     "Fundamental Analysis",
     "Model & Rating Explanation",
-    "Documentation & Assumptions",
+    "Limitations & Next Steps",
 ])
 
 # --- Page Routing ---
@@ -79,6 +79,6 @@ elif choice == "Fundamental Analysis":
 elif choice == "Model & Rating Explanation":
     page4.main()
 
-elif choice == "Documentation & Assumptions":
+elif choice == "Limitations & Next Steps":
     page5.main()
 
