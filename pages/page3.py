@@ -66,15 +66,25 @@ def fetch_ticker_info(ticker):
     return info, qf
 
 def compute_metrics(info, qf):
-    """Return a dict of your ratios plus YoY changes where available."""
-    # core ratios from info
-    roe   = info.get('returnOnEquity', np.nan)*100
-    roa   = info.get('returnOnAssets',  np.nan)*100
-    de    = info.get('debtToEquity',    np.nan)
-    pm    = info.get('profitMargins',   np.nan)*100
-    pe    = info.get('trailingPE',      np.nan)
-    eps_q = info.get('earningsQuarterlyGrowth', np.nan)*100
-    
+    """
+    Return a dict of your ratios plus YoY/QoQ changes where available.
+    """
+    # pull raw values (may be None)
+    raw_roe = info.get('returnOnEquity', None)
+    raw_roa = info.get('returnOnAssets',  None)
+    raw_de  = info.get('debtToEquity',    None)
+    raw_pm  = info.get('profitMargins',   None)
+    raw_pe  = info.get('trailingPE',      None)
+    raw_eps = info.get('earningsQuarterlyGrowth', None)
+
+    # coerce None → np.nan, then multiply
+    roe  = (raw_roe * 100)  if raw_roe is not None else np.nan
+    roa  = (raw_roa * 100)  if raw_roa is not None else np.nan
+    de   = raw_de           if raw_de  is not None else np.nan
+    pm   = (raw_pm * 100)   if raw_pm  is not None else np.nan
+    pe   = raw_pe           if raw_pe  is not None else np.nan
+    eps_q= (raw_eps * 100)  if raw_eps is not None else np.nan
+
     return {
       'Return on Equity (%)': roe,
       'Return on Assets (%)': roa,
@@ -82,7 +92,7 @@ def compute_metrics(info, qf):
       'Profit Margin (%)':    pm,
       'P/E Ratio':            pe,
       'EPS Growth QoQ (%)':   eps_q,
-      # could add more YoY computations here if we get the raw values in qf…
+      
     }
 
 def industry_averages(universe, industry, metric_keys):
