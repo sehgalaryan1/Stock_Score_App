@@ -129,7 +129,7 @@ def main():
             styles = [""] * len(row)
             idx = list(row.index).index("Company")
             metric = row["Metric"]
-            lower_is_better = ["Debt-to-Equity"]
+            lower_is_better = ["Debt-to-Equity", "P/E Ratio"]
             if pd.notna(row["Company"]) and pd.notna(row["Industry Avg"]):
                 better = (row["Company"] < row["Industry Avg"]) if metric in lower_is_better else (row["Company"] > row["Industry Avg"])
                 styles[idx] = "background-color: lightgreen" if better else "background-color: salmon"
