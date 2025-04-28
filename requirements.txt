@@ -5,5 +5,5 @@ pandas
 scikit-learn
 joblib
 plotly
-matplotlib.pyplot 
-matplotlib.ticker 
+matplotlib
+matplotlib
