@@ -109,7 +109,6 @@ def main():
         # --- Replace Feature Importances with Inputs & Targets ---
         st.subheader("📚 Inputs & Targets")
         st.markdown("""
-        ### Inputs & Targets
         - **Fundamental Features** (18 numeric + 1 categorical):  
           `current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, price_low_quarter, gics_sector_x`
         - **Technical Features** (7 numeric + 1 categorical):  
