@@ -36,9 +36,14 @@ def main():
 
         if not monthly_returns.empty:
             monthly_return_last = monthly_returns.iloc[-1]
+        else:
+            monthly_return_last = np.nan
+
+        # Display Monthly Return safely
+        if not pd.isna(monthly_return_last):
             st.metric(label="Monthly Return", value=f"{monthly_return_last:.2%}")
         else:
-            st.write("No sufficient data to calculate monthly return.")
+            st.metric(label="Monthly Return", value="N/A")
 
 if __name__ == "__main__":
     main()
