@@ -41,7 +41,9 @@ StockScore lets you enter any stock ticker and choose a weight (%) for **fundame
 - **Fundamental Model** (`model/fund_model.pkl`)  
   Predicts a stock rating based on key financial indicators.  
 - **Technical Model** (`model/tech_model.pkl`)  
-  Predicts a stock rating based on price-momentum and volume metrics.  
+  Predicts a stock rating based on price-momentum and volume metrics.
+- **Scaler** (model/minmax_scaler.pkl)
+Converts the raw model predictions (Fundamental F-score and Technical Sharpe ratio) into a normalized rating between 1 and 10 for easier comparison across stocks.
 
 A final combined rating (1–10) is generated based on the user-assigned weightages.
 
