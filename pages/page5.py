@@ -15,9 +15,9 @@ def main():
 ### What the Investment Rating Means
 - **0–3 → Risky Investment** 🔴  
   Higher risk, consider selling or avoiding.
-- **4–6 → Moderate Investment** 🟡  
+- **4–5 → Moderate Investment** 🟡  
   Balanced risk, hold or monitor closely.
-- **7–10 → Safer Investment** 🟢  
+- **6–10 → Safer Investment** 🟢  
   Lower risk, consider buying.
 
 ### Limitations
