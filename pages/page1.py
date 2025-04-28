@@ -92,8 +92,8 @@ def main():
 
         # --- Predict ---
         fund_model, tech_model, scaler = load_models()
-        raw_tech = fund_model.predict(df_f)[0]
-        raw_fund = tech_model.predict(df_t)[0]
+        raw_tech = tech_model.predict(df_t)[0] 
+        raw_fund = fund_model.predict(df_f)[0]
         
         tech_score, fund_score = scaler.transform([[raw_tech, raw_fund]])[0]
         final_score = (fund_score * fund_weight/100) + (tech_score * tech_weight/100)
