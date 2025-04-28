@@ -43,7 +43,7 @@ StockScore lets you enter any stock ticker and choose a weight (%) for **fundame
 - **Technical Model** (`model/tech_model.pkl`)  
   Predicts a stock rating based on price-momentum and volume metrics.  
 
-A final combined rating (0–10) is generated based on the user-assigned weightages.
+A final combined rating (1–10) is generated based on the user-assigned weightages.
 
 ---
 
