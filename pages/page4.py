@@ -15,7 +15,7 @@ def main():
 These are combined via user-chosen weights into a final **0–10 Investment Rating**.
     """)
 
-     st.divider()
+    st.divider()
 
     # --- Inputs & Targets Section ---
     st.header("📚 Inputs & Targets")
@@ -30,7 +30,7 @@ These are combined via user-chosen weights into a final **0–10 Investment Rati
     - Fundamental → `f_score` (Piotroski)
     - Technical → `sharpe_ratio`
     """)
-    
+
     st.divider()
 
     # --- Investment Rating Meaning Section ---
@@ -39,14 +39,12 @@ These are combined via user-chosen weights into a final **0–10 Investment Rati
 - **1–3 → Risky Investment** 🔴  
   Higher risk, consider selling or avoiding.
 
-- **3–6 → Moderate Investment** 🟡  
+- **4–5 → Moderate Investment** 🟡  
   Balanced risk, hold or monitor closely.
 
 - **6–10 → Safer Investment** 🟢  
   Lower risk, consider buying.
     """)
-
-   
 
 if __name__ == "__main__":
     main()
