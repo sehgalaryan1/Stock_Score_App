@@ -20,7 +20,6 @@ def main():
 
         # Make Date just the day (drop the timestamp) for a cleaner x-axis
         df = df.reset_index()
-        df["Date"] = df["Date"].dt.date
         df.set_index("Date", inplace=True)
 
         st.subheader(f"{ticker} Closing Price (Last 6 Months)")
