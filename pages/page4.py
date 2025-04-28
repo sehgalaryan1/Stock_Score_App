@@ -92,7 +92,7 @@ def main():
         df_t = pd.DataFrame([tech_data], columns=tech_num_cols + tech_cat_cols)
 
         # --- Run predictions ---
-        fund_model, tech_model = load_models()
+        fund_model, tech_model, scaler = load_models()
         raw_tech = tech_model.predict(df_t)[0]
         raw_fund = fund_model.predict(df_f)[0]
         tech_score, fund_score = scaler.transform([[raw_tech, raw_fund]])[0]
