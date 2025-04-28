@@ -111,9 +111,9 @@ def main():
         # --- Display rating (higher = safer) ---
         st.success(f"📊 **Investment Rating: {final_score:.2f} / 10** ")
 
-        if final_score < 3:
+        if final_score < 4:
             st.write("🔴 **Risky Investment**")
-        elif final_score < 6:
+        elif final_score < 7:
             st.write("🟡 **Moderate Investment**")
         else:
             st.write("🟢 **Safer Investment**")
