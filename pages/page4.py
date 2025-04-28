@@ -9,7 +9,8 @@ import plotly.graph_objects as go
 def load_models():
     fund_model = joblib.load("model/fund_model.pkl")
     tech_model = joblib.load("model/tech_model.pkl")
-    return fund_model, tech_model
+    scaler     = joblib.load("model/minmax_scaler.pkl")
+    return fund_model, tech_model, scaler
 
 def main():
     st.title("🤖 Model & Rating Explanation (Live Data)")
@@ -92,8 +93,10 @@ def main():
 
         # --- Run predictions ---
         fund_model, tech_model = load_models()
-        fund_score = fund_model.predict(df_f)[0]
-        tech_score = tech_model.predict(df_t)[0]
+        raw_tech = tech_model.predict(df_t)[0]
+        raw_fund = fund_model.predict(df_f)[0]
+        tech_score, fund_score = scaler.transform([[raw_tech, raw_fund]])[0]
+        
         final_score = (fund_score * fund_weight/100) + (tech_score * tech_weight/100)
         final_score = np.clip(final_score, 0, 10)
 
@@ -101,7 +104,7 @@ def main():
         st.subheader("📈 Rating Breakdown")
         st.write(f"- Fundamental Score: **{fund_score:.2f} / 10**")
         st.write(f"- Technical Score: **{tech_score:.2f} / 10**")
-        st.write(f"- **Combined Investment Rating: {final_score:.2f} / 10** (higher = safer)")
+        st.write(f"- **Combined Investment Rating: {final_score:.2f} / 10** ")
 
         # --- Feature importances (if available) ---
         st.subheader("🔎 Feature Importances")
