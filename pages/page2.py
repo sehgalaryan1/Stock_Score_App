@@ -47,11 +47,10 @@ def main():
         except Exception as e:
             st.error(f"Error calculating monthly returns: {e}")
 
-        # --- NEW: Monthly Trading Volume Chart (2 years) ---
+        # --- Monthly Trading Volume Chart (2 years) ---
         st.subheader(f"📊 {ticker} Monthly Trading Volume (Last 2 Years)")
 
         try:
-            # 1. 거래량 월별 합계
             monthly_volume = df['Volume'].resample('M').sum()
 
             if not monthly_volume.empty:
@@ -61,6 +60,22 @@ def main():
 
         except Exception as e:
             st.error(f"Error calculating monthly volume: {e}")
+
+        # --- NEW: 30-Day Rolling Volatility Chart (2 years) ---
+        st.subheader(f"📊 {ticker} 30-Day Rolling Volatility (Last 2 Years)")
+
+        try:
+            daily_ret = df["Close"].pct_change().dropna()
+
+            rolling_volatility = daily_ret.rolling(window=30).std()
+
+            if not rolling_volatility.empty:
+                st.line_chart(rolling_volatility)
+            else:
+                st.write("No volatility data available.")
+
+        except Exception as e:
+            st.error(f"Error calculating volatility: {e}")
 
 if __name__ == "__main__":
     main()
