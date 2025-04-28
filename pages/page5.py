@@ -1,25 +1,22 @@
 import streamlit as st
 
 def main():
-    st.title("📚 Limitations & Next Steps")
+    st.title("Limitations & Next Steps")
 
-    # Split into two columns for better visual balance
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.header("🚧 Limitations")
-        st.markdown("""
+    # Limitations section
+    st.header("Limitations")
+    st.markdown("""
 - **Historical Lag**  
   Fundamentals update quarterly; may not reflect very recent events.
 - **Market Noise**  
   Technical indicators can mislead during volatile swings.
 - **Model Assumptions**  
   Random Forest and rule-based logic assume stationarity; may not capture sudden regime changes.
-        """)
+    """)
 
-    with col2:
-        st.header("🚀 Next Steps")
-        st.markdown("""
+    # Next Steps section
+    st.header("Next Steps")
+    st.markdown("""
 1. **Enrich Data Sources**  
    Integrate additional fundamentals from WRDS and real-time news sentiment.  
 2. **Advanced Metrics**  
@@ -34,13 +31,10 @@ def main():
    Email or Slack alerts when ratings cross your thresholds.  
 7. **Export & Reporting**  
    PDF/CSV export of scores and charts for easy sharing.
-        """)
+    """)
 
     st.markdown("---")
     st.markdown(
         "<span style='color:gray;'>**Disclaimer:** This tool is provided “as-is” for educational purposes. Always conduct your own due diligence and consult a financial advisor before making investment decisions.</span>",
-        unsafe_allow_html=True
-    )
+        unsafe_allow_html=Tr
 
-if __name__ == "__main__":
-    main()
