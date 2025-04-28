@@ -31,12 +31,12 @@ def main():
         # --- Display Metrics ---
         st.subheader(f"📊 Key Technical Metrics for {ticker}")
         metrics = {
-            "Monthly Return (Last Month)": f"{monthly_return:.2%}",
-            "Monthly Trading Volume": f"{month_trading_volume:,.0f}",
-            "Standard Deviation (1Y)": f"{stdev:.2%}",
-            "Average Return (6M)": f"{avg_ret_6m:.2%}",
-            "Volatility (6M)": f"{vol_6m:.2%}",
-        }
+    "Monthly Return (Last Month)": f"{monthly_return:.2%}" if monthly_return is not None and not pd.isna(monthly_return) else "N/A",
+    "Monthly Trading Volume": f"{month_trading_volume:,.0f}" if month_trading_volume is not None and not pd.isna(month_trading_volume) else "N/A",
+    "Standard Deviation (1Y)": f"{stdev:.2%}" if stdev is not None and not pd.isna(stdev) else "N/A",
+    "Average Return (6M)": f"{avg_ret_6m:.2%}" if avg_ret_6m is not None and not pd.isna(avg_ret_6m) else "N/A",
+    "Volatility (6M)": f"{vol_6m:.2%}" if vol_6m is not None and not pd.isna(vol_6m) else "N/A",
+}
         
         for key, value in metrics.items():
             st.write(f"- **{key}**: {value}")
