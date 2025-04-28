@@ -73,8 +73,11 @@ elif choice == "Limitations & Next Steps":
     page5.main()
 
 # --- QR Code fixed at bottom-left of sidebar (original size) ---
-url = "https://your-website.com"
-qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={url}&size=150x150"
+import urllib.parse
+
+url = "https://stockscoreapp-4jbsnyaykawmponh76wn3s.streamlit.app/"
+encoded_url = urllib.parse.quote(url, safe='')
+qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={encoded_url}&size=150x150"
 
 st.sidebar.markdown(
     f"""
