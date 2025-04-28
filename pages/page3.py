@@ -95,12 +95,10 @@ def industry_averages(universe, industry):
 def main():
     st.title("🧾 Fundamental Analysis")
 
-    # 1) Ticker selector
     tickers = load_ticker_list()
     ticker  = st.selectbox("Select or Type a Stock Ticker",
                           options=tickers,
-                          index=tickers.index("AAPL"),
-                          help="Start typing…")
+                          index=tickers.index("AAPL"))
 
     if st.button("Fetch Fundamentals"):
         st.info(f"Loading fundamentals for {ticker}…")
@@ -110,11 +108,11 @@ def main():
         industry = info.get("industry", "N/A")
         st.write(f"**Sector:** {sector}   |   **Industry:** {industry}")
 
-        # 2) company & industry metrics
+        # compute metrics
         comp    = compute_metrics(info, qf)
         ind_avg = industry_averages(tickers, industry)
 
-        # 3) build DataFrame, 1-based index
+        # builddf
         df = (
             pd.DataFrame.from_dict({
                 'Company':      comp,
@@ -125,33 +123,27 @@ def main():
         )
         df.index = df.index + 1
 
-        # NEW: only keep last 4 rows to speed up styling & avoid the earlier error
-        df_display = df.tail(4).copy()
+        # **SHOW ALL 6** metrics now, not just tail(4)
+        df_display = df.copy()
 
+        # QoQ change only for EPS Growth
+        df_display['Change vs Prev Qtr'] = ""
+        mask = df_display['Metric']=="EPS Growth QoQ (%)"
+        df_display.loc[mask, 'Change vs Prev Qtr'] = (
+            df_display.loc[mask, 'Company'].round(2).astype(str) + '%'
+        )
+
+        # conditional styling
         def style_row(row):
             styles = [""] * len(row)
             idx = list(row.index).index("Company")
-            
             metric = row["Metric"]
-            
-            # Define metrics that need inverted logic (lower is better)
             lower_is_better = ["Debt-to-Equity"]
-            
             if pd.notna(row["Company"]) and pd.notna(row["Industry Avg"]):
-                if metric in lower_is_better:
-                    if row["Company"] < row["Industry Avg"]:
-                        styles[idx] = "background-color: lightgreen"
-                    else:
-                        styles[idx] = "background-color: salmon"
-                else:
-                    if row["Company"] > row["Industry Avg"]:
-                        styles[idx] = "background-color: lightgreen"
-                    else:
-                        styles[idx] = "background-color: salmon"
-                        
+                better = (row["Company"] < row["Industry Avg"]) if metric in lower_is_better else (row["Company"] > row["Industry Avg"])
+                styles[idx] = "background-color: lightgreen" if better else "background-color: salmon"
             return styles
 
-        
         styled = (
             df_display.style
               .format({
@@ -160,25 +152,27 @@ def main():
               })
               .apply(style_row, axis=1)
         )
-
-        # 6) show it
         st.dataframe(styled)
 
-        # 7) bar chart on the same 4 rows
+        # bar chart with blue/orange
         fig = go.Figure()
         fig.add_trace(go.Bar(
-            x=df_display['Metric'], y=df_display['Company'], name=ticker
+            x=df_display['Metric'], y=df_display['Company'],
+            name=ticker,
+            marker_color='blue'
         ))
         fig.add_trace(go.Bar(
-            x=df_display['Metric'], y=df_display['Industry Avg'], name=f"{industry} Avg"
+            x=df_display['Metric'], y=df_display['Industry Avg'],
+            name=f"{industry} Avg",
+            marker_color='orange'
         ))
         fig.update_layout(
             barmode='group',
-            title=f"{ticker} vs {industry} Averages (last 4)",
+            title=f"{ticker} vs {industry} Averages",
             xaxis_tickangle=-45,
             margin=dict(t=50, b=150)
         )
         st.plotly_chart(fig, use_container_width=True)
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
