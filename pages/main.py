@@ -22,11 +22,6 @@ choice = st.sidebar.radio("Go to", [
     "Limitations & Next Steps",
 ])
 
-# --- QR Code (after navigation) ---
-url = "https://your-website.com"
-qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={url}&size=150x150"
-st.sidebar.image(qr_api, caption="Scan to visit our site", use_column_width=False)
-
 # --- Page Routing ---
 if choice == "Home":
     st.title("📊 Welcome to the Stock Advisory Tool")
@@ -38,38 +33,28 @@ if choice == "Home":
 - Raskirt Bhatia  
 
 ---
-### 📚 Introduction  
+### Introduction  
 Investing doesn’t have to be overwhelming. Our tool brings together a company’s long-term financial health and short-term market momentum in one simple dashboard.
 
 ---
-### 🔍 What This App Does  
-We combine:
+### What This App Does  
 - **Fundamental Analysis**: Deep dive into company financials  
 - **Technical Analysis**: Price action and momentum indicators  
 
-…and deliver a clear **1–10 Investment Rating** so you can decide at a glance.
+…and delivers a clear **1–10 Investment Rating** so you can decide at a glance.
 
 ---
-### 🧠 How It Works  
-- We pull historical financials from WRDS Compustat (Jan 2015 – Dec 2024).  
-- We fetch live price and indicator data via Yahoo Finance.  
-- We blend a **Random Forest Regressor** with **rule-based logic** for a balanced view.
+### How It Works  
+1. Historical financials from WRDS Compustat (Jan 2015 – Dec 2024)  
+2. Live price and indicator data via Yahoo Finance  
+3. Blend of Random Forest Regressor + rule-based logic
 
 ---
-### 📈 Why It Matters  
-Markets move fast. This app helps you:
-- See if a company is financially solid  
-- Understand how the market feels right now  
-- Make data-driven decisions, not guesses
-
----
-### 🚀 Quick Start
-1. Go to **Stock Input & Score** in the sidebar.  
-2. Enter your ticker and pick the balance between fundamentals vs. technicals.  
-3. Click **Compute Investment Rating** to get your 1–10 score.  
-4. Explore other pages for detailed charts, ratios, and model insights.
-
-Use the sidebar to hop between pages whenever you like!
+### Quick Start
+1. Go to **Stock Input & Score**  
+2. Enter ticker & set fundamentals/technicals balance  
+3. Click **Compute Investment Rating**  
+4. Explore detailed charts, ratios, and explanations on other pages
 """)
 
 elif choice == "Stock Input & Score":
@@ -87,4 +72,11 @@ elif choice == "Model & Rating Explanation":
 elif choice == "Limitations & Next Steps":
     page5.main()
 
-
+# --- QR Code at bottom of sidebar ---
+url = "https://your-website.com"
+qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={url}&size=150x150"
+st.sidebar.image(
+    qr_api,
+    caption="Scan to visit our site",
+    use_container_width=False
+)
