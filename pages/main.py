@@ -2,7 +2,7 @@ import streamlit as st
 import page1    # Stock Input & Score page
 import page2    # Technical Analysis page
 import page3    # Fundamental Analysis page
-import page4    # Model & Score Explanation page
+import page4    # Model & Rating Explanation page
 import page5    # Documentation & Assumptions page
 
 st.set_page_config(
@@ -18,7 +18,7 @@ choice = st.sidebar.radio("Go to", [
     "Stock Input & Score",
     "Technical Analysis",
     "Fundamental Analysis",
-    "Model & Score Explanation",
+    "Model & Rating Explanation",
     "Documentation & Assumptions",
 ])
 
@@ -28,50 +28,43 @@ if choice == "Home":
     st.markdown("""
 ---
 ## 👥 Team Members
-- Aryan Sehgal
-- Hyunjin Yu 
-- Raskirt Bhatia   
+- Aryan Sehgal  
+- Hyunjin Yu  
+- Raskirt Bhatia  
 
 ---
 ### 📚 Introduction  
-Investing is both an art and a science — and we’re here to make it smarter and simpler for you.
-
-In today’s fast-moving markets, successful investing requires more than just watching the headlines.  
-It demands a balanced view of a company’s **long-term financial health** and its **short-term market momentum**.
-
-That’s why we built the **Stock Advisory Tool** — a data-driven platform that helps you make more informed investment decisions with just a few clicks.
+Investing doesn’t have to be overwhelming. Our tool brings together a company’s long-term financial health and short-term market momentum in one simple dashboard.
 
 ---
 ### 🔍 What This App Does  
-Our tool combines the power of:
-- 📚 **Fundamental Analysis** (deep dives into company financials)  
-- 📈 **Technical Analysis** (studying price movements and market trends)  
+We combine:
+- **Fundamental Analysis**: Deep dive into company financials  
+- **Technical Analysis**: Price action and momentum indicators  
 
-to generate a **1–10 investment rating** based on:
-1. **Historical financial strength** (key ratios like ROE, profit margin, debt levels)  
-2. **Recent market behavior** (momentum, volatility, technical patterns)
+…and deliver a clear **0–10 Investment Rating** so you can decide at a glance.
 
 ---
 ### 🧠 How It Works  
-- We pull historical financial data from WRDS Compustat (Jan 2015 – Dec 2024) to assess fundamentals.  
-- We fetch real-time price and indicator data via the Yahoo Finance API to capture market sentiment.  
-- A hybrid ML system (logistic regression, decision trees, rule-based logic) blends these into a final risk score.
+- We pull historical financials from WRDS Compustat (Jan 2015 – Dec 2024).  
+- We fetch live price and indicator data via Yahoo Finance.  
+- We blend a **Random Forest Regressor** with **rule-based logic** for a balanced view.
 
 ---
 ### 📈 Why It Matters  
-Investment decisions are never black and white. Our app cuts through the noise by showing:
-- **What** the company is (fundamentally strong or weak)  
-- **How** the market feels about it (rising or falling)  
-
-You can also drill into detailed ratios and charts for deeper context.
+Markets move fast. This app helps you:
+- See if a company is financially solid  
+- Understand how the market feels right now  
+- Make data-driven decisions, not guesses
 
 ---
-### 🚀 Get Started Now  
-1. Enter a stock ticker  
-2. Review the 1–10 investment rating  
-3. Adjust fundamental vs. technical weightings to match your style  
+### 🚀 Quick Start
+1. Go to **Stock Input & Score** in the sidebar.  
+2. Enter your ticker and pick the balance between fundamentals vs. technicals.  
+3. Click **Compute Investment Rating** to get your 0–10 score.  
+4. Explore other pages for detailed charts, ratios, and model insights.
 
-Use the **sidebar** to navigate to any section!
+Use the sidebar to hop between pages whenever you like!
 """)
 
 elif choice == "Stock Input & Score":
@@ -83,8 +76,9 @@ elif choice == "Technical Analysis":
 elif choice == "Fundamental Analysis":
     page3.main()
 
-elif choice == "Model & Score Explanation":
+elif choice == "Model & Rating Explanation":
     page4.main()
 
 elif choice == "Documentation & Assumptions":
     page5.main()
+
