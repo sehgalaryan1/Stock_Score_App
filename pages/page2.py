@@ -47,6 +47,21 @@ def main():
         except Exception as e:
             st.error(f"Error calculating monthly returns: {e}")
 
+        # --- NEW: Monthly Trading Volume Chart (2 years) ---
+        st.subheader(f"📊 {ticker} Monthly Trading Volume (Last 2 Years)")
+
+        try:
+            # 1. 거래량 월별 합계
+            monthly_volume = df['Volume'].resample('M').sum()
+
+            if not monthly_volume.empty:
+                st.line_chart(monthly_volume)
+            else:
+                st.write("No monthly volume data available.")
+
+        except Exception as e:
+            st.error(f"Error calculating monthly volume: {e}")
+
 if __name__ == "__main__":
     main()
 #--------------------------------------------------------
