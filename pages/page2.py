@@ -40,7 +40,7 @@ def main():
 
             # 3. Safe display
             if not monthly_returns.empty:
-                monthly_return_last = monthly_returns.iloc[-1]
+                monthly_return_last = monthly_returns.iloc[-1].item()
                 st.metric(label="Monthly Return", value=f"{monthly_return_last:.2%}")
             else:
                 st.metric(label="Monthly Return", value="N/A")
