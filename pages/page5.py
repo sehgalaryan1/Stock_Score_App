@@ -8,11 +8,6 @@ def main():
 - **Historical Lag**: Fundamentals update quarterly; may not reflect very recent events.  
 - **Market Noise**: Technical indicators can mislead during volatile swings.  
 - **Model Assumptions**: Random Forest and rule-based logic assume stationarity; may not capture sudden regime changes.
-
----
-**Disclaimer:**  
-This tool is provided **“as-is”** for educational purposes. Always conduct your own due diligence and consult a financial advisor before making investment decisions.
-
 ---
 ### Next Steps
 - **Enrich Data Sources**  
@@ -29,6 +24,10 @@ This tool is provided **“as-is”** for educational purposes. Always conduct y
   Build email or Slack alerts when a stock’s rating crosses a user-defined threshold.   
 - **Export & Reporting**  
   Allow PDF/CSV export of scores and charts for easy sharing and record-keeping.  
+
+---
+**Disclaimer:**  
+This tool is provided **“as-is”** for educational purposes. Always conduct your own due diligence and consult a financial advisor before making investment decisions.
 
 ---
 """)
