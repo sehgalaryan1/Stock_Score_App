@@ -4,7 +4,63 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
-# Cache machine-learning models and scaler
+# --- Load tickers ---
+@st.cache_data
+# ticker_list.py
+
+def load_ticker_list():
+    tickers = [
+        'AAPL', 'MSFT', 'NVDA', 'GOOG', 'GOOGL', 'AMZN', 'META', 'BRK.B', 'AVGO', 'TSLA',
+        'WMT', 'LLY', 'JPM', 'V', 'UNH', 'MA', 'XOM', 'COST', 'NFLX', 'PG',
+        'ORCL', 'JNJ', 'HD', 'ABBV', 'KO', 'TMUS', 'BAC', 'PM', 'CRM', 'CVX',
+        'PLTR', 'CSCO', 'MCD', 'IBM', 'ABT', 'LIN', 'WFC', 'GE', 'MRK', 'T',
+        'PEP', 'VZ', 'AXP', 'ACN', 'MS', 'ISRG', 'RTX', 'NOW', 'TMO', 'INTU',
+        'PGR', 'AMGN', 'GS', 'UBER', 'AMD', 'DIS', 'QCOM', 'BKNG', 'ADBE', 'SPGI',
+        'TJX', 'CAT', 'SCHW', 'BSX', 'NEE', 'BLK', 'TXN', 'DHR', 'SYK', 'UNP',
+        'GILD', 'CMCSA', 'VRTX', 'HON', 'PFE', 'DE', 'LOW', 'ADP', 'C', 'FI',
+        'AMAT', 'BA', 'PANW', 'MMC', 'CB', 'LMT', 'ETN', 'COP', 'MDT', 'AMT',
+        'BMY', 'SO', 'ELV', 'BX', 'CRWD', 'MO', 'WELL', 'SBUX', 'CME', 'DUK',
+        'WM', 'KKR', 'ANET', 'ICE', 'PLD', 'CI', 'KLAC', 'GEV', 'ADI', 'LRCX',
+        'CVS', 'MCK', 'MDLZ', 'INTC', 'AJG', 'SHW', 'CTAS', 'HCA', 'UPS', 'AON',
+        'NKE', 'ORLY', 'APH', 'MU', 'MCO', 'TT', 'EQIX', 'RSG', 'CL', 'TDG',
+        'NOC', 'FTNT', 'DASH', 'GD', 'PH', 'MMM', 'APO', 'CDNS', 'ABNB', 'MSI',
+        'WMB', 'ITW', 'ECL', 'ZTS', 'CMG', 'SNPS', 'CEG', 'COF', 'WDAY', 'NEM',
+        'IBKR', 'WSO', 'RYAN', 'RBA', 'EME', 'CASY', 'FNF', 'GWRE', 'SFM', 'DOCU',
+        'BJ', 'CSL', 'WMG', 'BURL', 'DKS', 'DUOL', 'RS', 'USFD', 'EQH', 'CHWY',
+        'CNH', 'PSTG', 'UNM', 'RPM', 'GLPI', 'AMH', 'CG', 'GGG', 'WPC', 'DT',
+        'UTHR', 'PPC', 'FIX', 'ELS', 'ACM', 'SGI', 'COKE', 'MORN', 'RGLD', 'CW',
+        'RGA', 'FLEX', 'GME', 'PFGC', 'OC', 'ILMN', 'RNR', 'WLK', 'ACI', 'BMRN',
+        'THC', 'XPO', 'KNSL', 'SCI', 'LAMR', 'CLH', 'WTRG', 'CART', 'OHI', 'ENTG',
+        'TXRH', 'HLI', 'NLY', 'AFG', 'PEN', 'EWBC', 'AVTR', 'RBC', 'PCTY', 'H',
+        'EHC', 'AR', 'ITT', 'JLL', 'EXEL', 'CAVA', 'WWD', 'MUSA', 'LECO', 'PAG',
+        'MANH', 'GMED', 'DOCS', 'ALLY', 'CCK', 'CNM', 'DTM', 'BRBR', 'CELH',
+        'NBIX', 'BWXT', 'ATR', 'TOL', 'MTZ', 'X', 'CACI', 'ORI', 'SEIC', 'MEDP',
+        'JEF', 'FHN', 'OGE', 'FYBR', 'SF', 'PR', 'CUBE', 'SAIA', 'COHR', 'CRS',
+        'AIT', 'SNX', 'ARMK', 'CHE', 'PRI', 'SSB', 'CIEN', 'G', 'BLD', 'OVV',
+        'INGR', 'NVT', 'ADC', 'HRB', 'MASI', 'EGP', 'CR', 'MLI', 'PLNT', 'WMS',
+        'DBX', 'VNOM', 'APPF', 'RRC', 'TTEK', 'AM', 'NYT', 'CBSH', 'HLNE', 'BERY',
+        'FND', 'NNN', 'LAD', 'BRX', 'HALO', 'DCI', 'CHDN', 'GPK', 'WBS', 'EXP',
+        'EXLS', 'CORT', 'COOP', 'EAT', 'TGTX', 'SPXC', 'CRVL', 'LRN', 'VIRT',
+        'TFX', 'EPRT', 'AWI', 'CWEN', 'TRNO', 'BWA', 'CRK', 'STEP', 'ACIW',
+        'CWE.A', 'BMI', 'MMSI', 'QRVO', 'GKOS', 'CTRE', 'BCPC', 'JXN', 'ADMA',
+        'GPI', 'IDCC', 'MOG.A', 'LNC', 'RHP', 'KTOS', 'JBTM', 'CSWI', 'SPSC',
+        'ZWS', 'RHI', 'KRYS', 'AL', 'CALM', 'SKY', 'FMC', 'ETSY', 'ITRI', 'MSGS',
+        'FSS', 'ALKS', 'MTH', 'RDN', 'AMTM', 'ESI', 'IBP', 'URBN', 'WSC', 'PECO',
+        'GTES', 'DY', 'ABG', 'INSP', 'MARA', 'BOX', 'GEO', 'NSIT', 'TDS', 'RUSHA',
+        'SANM', 'GSHD', 'CE', 'PLMR', 'AROC', 'BGC', 'MP', 'AGO', 'ITGR', 'FELE',
+        'FIZZ', 'PBH', 'PIPR', 'ATGE', 'CNR', 'AVAV', 'ESE', 'MRP', 'MGY', 'RDNT',
+        'MC', 'SNDR', 'MWA', 'FRPT', 'CVCO', 'SNDK', 'SEE', 'SNEX', 'CNS', 'SMPL',
+        'SFBS', 'ACA', 'KAI', 'YOU', 'SLG', 'SKT', 'GOLF', 'ABCB', 'MAC', 'BCC',
+        'BANF', 'SHAK', 'LUMN', 'SKYW', 'MDU', 'ICUI', 'DORM', 'VRRM', 'AEIS',
+        'GVA', 'AX', 'GFF', 'IPAR', 'AVA', 'OTTR', 'CNK', 'MGEE', 'PLXS', 'MATX',
+        'MPW', 'SITM', 'OSIS', 'UNF', 'BRC', 'KFY', 'SWI', 'FUN', 'SXT', 'BXMT',
+        'CRC', 'CPK', 'NPO', 'PJT', 'AWR', 'KTB', 'CWT', 'WDFC', 'FTDR', 'HIW',
+        'TMDX', 'FBP', 'PRVA', 'UCB', 'ABM', 'FULT'
+    ]
+    return tickers
+
+
+# --- Cache models and scalers ---
 @st.cache_resource
 def load_models():
     fund_model = joblib.load("model/fund_model.pkl")
@@ -12,30 +68,38 @@ def load_models():
     scaler     = joblib.load("model/minmax_scaler.pkl")
     return fund_model, tech_model, scaler
 
-# Cache fundamental info
+# --- Cache fundamental info ---
 @st.cache_data(ttl=3600)
 def get_info(ticker):
     tk = yf.Ticker(ticker)
     return tk.info
 
-# Cache price history
+# --- Cache price history ---
 @st.cache_data(ttl=3600)
 def get_history(ticker):
     return yf.download(ticker, period="1y", interval="1d", progress=False)
 
-
+# --- Main page ---
 def main():
     st.title("🤖 Model & Rating Explanation")
 
-    # --- Live Example: always on top ---
+    # --- Live Example section ---
     st.header("Live Example")
-    ticker = st.text_input("Enter Stock Ticker", "AAPL").upper()
+
+    # ✅ REPLACEMENT: use selectbox instead of text_input
+    tickers = load_ticker_list()
+    ticker = st.selectbox(
+        "Select or Type a Stock Ticker", 
+        options=tickers,
+        index=tickers.index('AAPL'),
+        help="Start typing to quickly filter the list."
+    )
+
     fund_weight = st.slider("Fundamental Weight (%)", 0, 100, 50)
     tech_weight = 100 - fund_weight
     st.write(f"**Fundamental:** {fund_weight}%   |   **Technical:** {tech_weight}%")
 
     if st.button("Run Analysis"):
-        # Fetch data and run models
         with st.spinner("Fetching data and running models…"):
             try:
                 info = get_info(ticker)
@@ -47,9 +111,10 @@ def main():
             if hist is None or hist.empty:
                 st.error("No price history found.")
                 return
+
             daily_ret = hist['Close'].pct_change().dropna()
 
-            # Prepare feature DataFrames
+            # --- Build fundamental features ---
             fund_num_cols = [
                 'current_assets','total_assets','common_equity_total',
                 'current_debt','long_term_debt','depreciation_amortization',
@@ -83,6 +148,7 @@ def main():
             }
             df_f = pd.DataFrame([fund_data], columns=fund_num_cols + fund_cat_cols)
 
+            # --- Build technical features ---
             tech_num_cols = [
                 'monthly_return','month_trading_volume','stdev',
                 'avg_ret_6m','avg_ret_12m','vol_6m','vol_12m'
@@ -100,7 +166,7 @@ def main():
             }
             df_t = pd.DataFrame([tech_data], columns=tech_num_cols + tech_cat_cols)
 
-            # Run predictions
+            # --- Predict scores ---
             fund_model, tech_model, scaler = load_models()
             raw_tech = tech_model.predict(df_t)[0]
             raw_fund = fund_model.predict(df_f)[0]
@@ -110,49 +176,40 @@ def main():
                 0, 10
             )
 
-        # Display breakdown immediately
+        # --- Display results ---
         st.subheader("📈 Rating Breakdown")
         st.write(f"- Fundamental Score: **{fund_score:.2f} / 10**")
         st.write(f"- Technical Score: **{tech_score:.2f} / 10**")
         st.write(f"- **Combined Investment Rating: {final_score:.2f} / 10**")
 
-        # Explanatory sections below
+        # --- How it works explanation ---
         st.divider()
         st.header("How It Works")
         st.markdown("""
-- **Fundamental Data**: WRDS Compustat (Jan 2015 – Dec 2024) containing 8,612 rows and using financial metrics like current assets, net income, liabilities, etc.
-- **Technical Data**: Real-time prices & indicators from Yahoo Finance (monthly return, volatility, moving averages, etc.) containing 26,105 rows.
-- **Models**: Two separate scikit-learn pipelines:
-    - Fundamental model predicts a Piotroski F-score
-    - Technical model predicts a Sharpe ratio
-
-These are combined via user-chosen weights into a final **1–10 Investment Rating**.
+- **Fundamental Data**: WRDS Compustat (Jan 2015 – Dec 2024)
+- **Technical Data**: Real-time prices & indicators from Yahoo Finance
+- **Models**: 
+    - Fundamental → Piotroski F-score
+    - Technical → Sharpe ratio
+- **Final Rating**: Weighted average
         """)
+
         st.divider()
         st.header("📚 Inputs & Targets")
         st.markdown("""
-- **Fundamental Features** (18 numeric + 1 categorical):  
-  current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, price_low_quarter, gics_sector_x
-
-- **Technical Features** (7 numeric + 1 categorical):  
-  monthly_return, month_trading_volume, stdev, avg_ret_6m, avg_ret_12m, vol_6m, vol_12m, gics_sector_x
-
-- **Targets**:
-    - Fundamental → f_score (Piotroski)
-    - Technical → sharpe_ratio
+- **Fundamental Inputs**: 18 numeric + 1 categorical
+- **Technical Inputs**: 7 numeric + 1 categorical
+- **Targets**: f_score (fundamental) | sharpe_ratio (technical)
         """)
+
         st.divider()
         st.header("What the Investment Rating Means")
         st.markdown("""
-- **1–3 → Risky Investment** 🔴  
-  Higher risk, consider selling or avoiding.
-
-- **3–6 → Moderate Investment** 🟡  
-  Balanced risk, hold or monitor closely.
-
-- **6–10 → Safer Investment** 🟢  
-  Lower risk, consider buying.
+- **1–3** → Risky Investment 🔴
+- **3–6** → Moderate Investment 🟡
+- **6–10** → Safer Investment 🟢
         """)
 
 if __name__ == "__main__":
     main()
+
