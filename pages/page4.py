@@ -108,55 +108,43 @@ def main():
 
         # --- Feature importances (if available) ---
         st.subheader("🔎 Feature Importances")
-           st.markdown("""
-
-                ### Inputs & Targets
-                - **Fundamental Features** (18 numeric + 1 categorical):  
-                  `current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, price_low_quarter, gics_sector_x`
-                - **Technical Features** (7 numeric + 1 categorical):  
-                  `monthly_return, month_trading_volume, stdev, avg_ret_6m, avg_ret_12m, vol_6m, vol_12m, gics_sector_x`
-                - **Targets**:  
-                  - Fundamental → `f_score` (Piotroski)  
-                  - Technical → `sharpe_ratio`
-                  """
-                    )
 
 
-        # if hasattr(fund_model, "feature_importances_"):
-        #     imp = fund_model.feature_importances_
-        #     df_imp = pd.DataFrame({
-        #         "feature": fund_num_cols,
-        #         "importance": imp[:len(fund_num_cols)]
-        #     }).sort_values("importance", ascending=False)
-        #     fig = go.Figure(go.Bar(
-        #         x=df_imp["importance"],
-        #         y=df_imp["feature"],
-        #         orientation="h",
-        #         text=df_imp["importance"].map(lambda v: f"{v:.3f}"),
-        #         textposition="auto"
-        #     ))
-        #     fig.update_layout(title="Fundamental Model Importances", yaxis_title="", margin=dict(l=150))
-        #     st.plotly_chart(fig, use_container_width=True)
-        # else:
-        #     st.write("Fundamental model does not expose `feature_importances_`.")
+        if hasattr(fund_model, "feature_importances_"):
+            imp = fund_model.feature_importances_
+            df_imp = pd.DataFrame({
+                "feature": fund_num_cols,
+                "importance": imp[:len(fund_num_cols)]
+            }).sort_values("importance", ascending=False)
+            fig = go.Figure(go.Bar(
+                x=df_imp["importance"],
+                y=df_imp["feature"],
+                orientation="h",
+                text=df_imp["importance"].map(lambda v: f"{v:.3f}"),
+                textposition="auto"
+            ))
+            fig.update_layout(title="Fundamental Model Importances", yaxis_title="", margin=dict(l=150))
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.write("Fundamental model does not expose `feature_importances_`.")
 
-        # if hasattr(tech_model, "feature_importances_"):
-        #     imp = tech_model.feature_importances_
-        #     df_imp = pd.DataFrame({
-        #         "feature": tech_num_cols,
-        #         "importance": imp[:len(tech_num_cols)]
-        #     }).sort_values("importance", ascending=False)
-        #     fig = go.Figure(go.Bar(
-        #         x=df_imp["importance"],
-        #         y=df_imp["feature"],
-        #         orientation="h",
-        #         text=df_imp["importance"].map(lambda v: f"{v:.3f}"),
-        #         textposition="auto"
-        #     ))
-        #     fig.update_layout(title="Technical Model Importances", yaxis_title="", margin=dict(l=150))
-        #     st.plotly_chart(fig, use_container_width=True)
-        # else:
-        #     st.write("Technical model does not expose `feature_importances_`.")
+        if hasattr(tech_model, "feature_importances_"):
+            imp = tech_model.feature_importances_
+            df_imp = pd.DataFrame({
+                "feature": tech_num_cols,
+                "importance": imp[:len(tech_num_cols)]
+            }).sort_values("importance", ascending=False)
+            fig = go.Figure(go.Bar(
+                x=df_imp["importance"],
+                y=df_imp["feature"],
+                orientation="h",
+                text=df_imp["importance"].map(lambda v: f"{v:.3f}"),
+                textposition="auto"
+            ))
+            fig.update_layout(title="Technical Model Importances", yaxis_title="", margin=dict(l=150))
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.write("Technical model does not expose `feature_importances_`.")
 
 if __name__ == "__main__":
     main()
