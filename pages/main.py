@@ -64,5 +64,27 @@ Markets move fast. This app helps you:
 
 ---
 ### 🚀 Quick Start
-1. Go to **Stock Input & Score** in the sidebar.
+1. Go to **Stock Input & Score** in the sidebar.  
+2. Enter your ticker and pick the balance between fundamentals vs. technicals.  
+3. Click **Compute Investment Rating** to get your 1–10 score.  
+4. Explore other pages for detailed charts, ratios, and model insights.
+
+Use the sidebar to hop between pages whenever you like!
+""")
+
+elif choice == "Stock Input & Score":
+    page1.main()
+
+elif choice == "Technical Analysis":
+    page2.main()
+
+elif choice == "Fundamental Analysis":
+    page3.main()
+
+elif choice == "Model & Rating Explanation":
+    page4.main()
+
+elif choice == "Limitations & Next Steps":
+    page5.main()
+
 
