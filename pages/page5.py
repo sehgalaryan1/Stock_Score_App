@@ -5,7 +5,7 @@ def main():
 
     st.markdown("""
 ### How It Works
-- **Fundamental Data**: WRDS Compustat (2000–2024) – uses financial metrics like current assets, net income, liabilities, etc.
+- **Fundamental Data**: WRDS Compustat (Jan 2015 – Dec 2024) – uses financial metrics like current assets, net income, liabilities, etc.
 - **Technical Data**: Real-time prices & indicators from Yahoo Finance (monthly return, volatility, moving averages, etc.)
 - **Models**: Two separate scikit-learn pipelines
   - Fundamental model predicts a Piotroski F-score  
