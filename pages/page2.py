@@ -93,8 +93,9 @@ def main():
             )
 
             # 2) Sharpe = mean / std  (no risk-free assumed)
-            sharpe = monthly_ret.mean() / monthly_ret.std() * (12**0.5)
-
+            raw_sharpe = monthly_ret.mean() / monthly_ret.std() * (12**0.5)
+            sharpe = float(raw_sharpe)
+            
             st.subheader("Sharpe Ratio (monthly over 2 yr)")
             st.write(f"**{sharpe:.2f}**")
         except Exception as e:
