@@ -39,7 +39,7 @@ These are combined via user-chosen weights into a final **0–10 Investment Rati
 - **1–3 → Risky Investment** 🔴  
   Higher risk, consider selling or avoiding.
 
-- **4–5 → Moderate Investment** 🟡  
+- **3–6 → Moderate Investment** 🟡  
   Balanced risk, hold or monitor closely.
 
 - **6–10 → Safer Investment** 🟢  
