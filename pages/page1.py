@@ -8,7 +8,8 @@ import yfinance as yf
 def load_models():
     fund_model = joblib.load("model/fund_model.pkl")
     tech_model = joblib.load("model/tech_model.pkl")
-    return fund_model, tech_model
+    scaler     = joblib.load("model/minmax_scaler.pkl")
+    return fund_model, tech_model, scaler
 
 def main():
     st.title("🔍 Stock Input & Rating (Live Data)")
@@ -90,9 +91,11 @@ def main():
         df_t = pd.DataFrame([tech_data], columns=tech_num_cols + tech_cat_cols)
 
         # --- Predict ---
-        fund_model, tech_model = load_models()
-        fund_score = fund_model.predict(df_f)[0]
-        tech_score = tech_model.predict(df_t)[0]
+        fund_model, tech_model, scaler = load_models()
+        raw_tech = fund_model.predict(df_f)[0]
+        raw_fund = tech_model.predict(df_t)[0]
+        
+        tech_score, fund_score = scaler.transform([[raw_tech, raw_fund]])[0]
         final_score = (fund_score * fund_weight/100) + (tech_score * tech_weight/100)
         final_score = np.clip(final_score, 0, 10)
 
