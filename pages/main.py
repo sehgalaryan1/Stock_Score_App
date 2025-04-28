@@ -13,6 +13,14 @@ st.set_page_config(
 
 # --- Sidebar Navigation ---
 st.sidebar.title("🔗 Navigation")
+
+# --- QR Code ---
+url = "https://your-website.com"
+qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={url}&size=150x150"
+st.sidebar.image(qr_api, caption="Scan to visit our site", use_column_width=False)
+st.sidebar.markdown(f"[Go to website]({url})")
+
+# --- Navigation Links ---
 choice = st.sidebar.radio("Go to", [
     "Home",
     "Stock Input & Score",
@@ -81,4 +89,3 @@ elif choice == "Model & Rating Explanation":
 
 elif choice == "Limitations & Next Steps":
     page5.main()
-
