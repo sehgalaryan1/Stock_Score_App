@@ -17,7 +17,7 @@ An interactive, multi-page Streamlit dashboard that combines fundamental and tec
 ---
 
 ## 📝 Project Description
-StockScore lets you enter any stock ticker and choose a weight (%) for **fundamental analysis**; the remaining weight is applied to **technical analysis**. The app fetches live data from Yahoo Finance, runs two separate ML pipelines, and delivers a combined **0–10 Investment Rating** (higher = safer).
+StockScore lets you enter any stock ticker and choose a weight (%) for **fundamental analysis**; the remaining weight is applied to **technical analysis**. The app fetches live data from Yahoo Finance, runs two separate ML pipelines, and delivers a combined **1–10 Investment Rating** (higher = safer).
 
 ---
 
