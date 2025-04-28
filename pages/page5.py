@@ -12,15 +12,6 @@ def main():
   - Technical model predicts a Sharpe ratio  
   These are combined via user-chosen weights into a final **0–10 Investment Rating**.
 
-### Inputs & Targets
-- **Fundamental Features** (18 numeric + 1 categorical):  
-  `current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, price_low_quarter, gics_sector_x`
-- **Technical Features** (7 numeric + 1 categorical):  
-  `monthly_return, month_trading_volume, stdev, avg_ret_6m, avg_ret_12m, vol_6m, vol_12m, gics_sector_x`
-- **Targets**:  
-  - Fundamental → `f_score` (Piotroski)  
-  - Technical → `sharpe_ratio`
-
 ### What the Investment Rating Means
 - **0–3 → Risky Investment** 🔴  
   Higher risk, consider selling or avoiding.
@@ -42,3 +33,12 @@ This tool is provided **“as-is”** for educational purposes. Always conduct y
 if __name__ == "__main__":
     main()
 
+
+# ### Inputs & Targets
+# - **Fundamental Features** (18 numeric + 1 categorical):  
+#   `current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, price_low_quarter, gics_sector_x`
+# - **Technical Features** (7 numeric + 1 categorical):  
+#   `monthly_return, month_trading_volume, stdev, avg_ret_6m, avg_ret_12m, vol_6m, vol_12m, gics_sector_x`
+# - **Targets**:  
+#   - Fundamental → `f_score` (Piotroski)  
+#   - Technical → `sharpe_ratio`
