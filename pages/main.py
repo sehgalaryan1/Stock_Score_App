@@ -27,6 +27,12 @@ if choice == "Home":
     st.title("📊 Welcome to the Stock Advisory Tool")
     st.markdown("""
 ---
+## 👥 Team Members
+- Aryan Sehgal  
+- Raskirt Bhatia  
+- Hyunjin Yu  
+
+---
 ### 📚 Introduction  
 Investing is both an art and a science — and we’re here to make it smarter and simpler for you.
 
@@ -82,4 +88,3 @@ elif choice == "Model & Score Explanation":
 
 elif choice == "Documentation & Assumptions":
     page5.main()
-
