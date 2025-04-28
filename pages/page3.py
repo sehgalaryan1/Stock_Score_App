@@ -1,6 +1,7 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 
 # Cache ticker list for dropdown
@@ -60,16 +61,12 @@ def load_ticker_list():
 
 @st.cache_data
 def fetch_ticker_info(ticker):
-    tk = yf.Ticker(ticker)
+    tk   = yf.Ticker(ticker)
     info = tk.info or {}
-    qf   = tk.quarterly_financials   # DataFrame: cols are quarters
+    qf   = tk.quarterly_financials
     return info, qf
 
 def compute_metrics(info, qf):
-    """
-    Return a dict of your ratios plus YoY/QoQ changes where available.
-    """
-    # pull raw values (may be None)
     raw_roe = info.get('returnOnEquity', None)
     raw_roa = info.get('returnOnAssets',  None)
     raw_de  = info.get('debtToEquity',    None)
@@ -77,26 +74,16 @@ def compute_metrics(info, qf):
     raw_pe  = info.get('trailingPE',      None)
     raw_eps = info.get('earningsQuarterlyGrowth', None)
 
-    # coerce None → np.nan, then multiply
-    roe  = (raw_roe * 100)  if raw_roe is not None else np.nan
-    roa  = (raw_roa * 100)  if raw_roa is not None else np.nan
-    de   = raw_de           if raw_de  is not None else np.nan
-    pm   = (raw_pm * 100)   if raw_pm  is not None else np.nan
-    pe   = raw_pe           if raw_pe  is not None else np.nan
-    eps_q= (raw_eps * 100)  if raw_eps is not None else np.nan
-
     return {
-      'Return on Equity (%)': roe,
-      'Return on Assets (%)': roa,
-      'Debt-to-Equity':       de,
-      'Profit Margin (%)':    pm,
-      'P/E Ratio':            pe,
-      'EPS Growth QoQ (%)':   eps_q,
-      
+        'Return on Equity (%)': (raw_roe * 100) if raw_roe is not None else np.nan,
+        'Return on Assets (%)': (raw_roa * 100) if raw_roa is not None else np.nan,
+        'Debt-to-Equity':       raw_de if raw_de is not None else np.nan,
+        'Profit Margin (%)':    (raw_pm * 100) if raw_pm is not None else np.nan,
+        'P/E Ratio':            raw_pe if raw_pe is not None else np.nan,
+        'EPS Growth QoQ (%)':   (raw_eps * 100) if raw_eps is not None else np.nan,
     }
 
-def industry_averages(universe, industry, metric_keys):
-    """Loop the ticker universe, grab each ticker that matches `industry`, compute average per metric."""
+def industry_averages(universe, industry):
     rows = []
     for tk in universe:
         info, qf = fetch_ticker_info(tk)
@@ -105,77 +92,86 @@ def industry_averages(universe, industry, metric_keys):
     df_ind = pd.DataFrame(rows)
     return df_ind.mean()
 
-# —————— Streamlit page ——————
-
 def main():
     st.title("🧾 Fundamental Analysis")
 
-    # 1) ticker
+    # 1) Ticker selector
     tickers = load_ticker_list()
-    ticker  = st.selectbox(
-      "Select or Type a Stock Ticker",
-      options=tickers,
-      index=tickers.index("AAPL"),
-      help="Start typing…"
-    )
+    ticker  = st.selectbox("Select or Type a Stock Ticker",
+                          options=tickers,
+                          index=tickers.index("AAPL"),
+                          help="Start typing…")
 
     if st.button("Fetch Fundamentals"):
-        st.info(f"Loading {ticker}…")
+        st.info(f"Loading fundamentals for {ticker}…")
         info, qf = fetch_ticker_info(ticker)
-        sector   = info.get("sector","N/A")
-        industry = info.get("industry","N/A")
+
+        sector   = info.get("sector",   "N/A")
+        industry = info.get("industry", "N/A")
         st.write(f"**Sector:** {sector}   |   **Industry:** {industry}")
 
-        # 2) compute your company metrics
-        comp = compute_metrics(info, qf)
+        # 2) company & industry metrics
+        comp    = compute_metrics(info, qf)
+        ind_avg = industry_averages(tickers, industry)
 
-        # 3) compute industry averages
-        ind_avg = industry_averages(tickers, industry, list(comp.keys()))
-
-        # 4) put it all in a DataFrame, reindex from 1…
+        # 3) build DataFrame, 1-based index
         df = (
-          pd.DataFrame.from_dict({
-            'Company': comp,
-            'Industry Avg': ind_avg
-          })
-          .reset_index()
-          .rename(columns={'index':'Metric'})
+            pd.DataFrame.from_dict({
+                'Company':      comp,
+                'Industry Avg': ind_avg
+            })
+            .reset_index()
+            .rename(columns={'index': 'Metric'})
         )
         df.index = df.index + 1
 
-        # 5) add YoY/QoQ change column (for EPS Growth we have it, others can be blank or computed)
-        df['Change vs Prev Qtr'] = ''
-        df.loc[df['Metric']=="EPS Growth QoQ (%)", 'Change vs Prev Qtr'] = df.loc[df['Metric']=="EPS Growth QoQ (%)","Company"].astype(float)
+        # ───────────────────────────────────────────────────
+        # NEW: only keep last 4 rows to speed up styling & avoid the earlier error
+        df_display = df.tail(4).copy()
+        # ───────────────────────────────────────────────────
 
-        # 6) display with conditional formatting
-        def color_row(val, indval):
-            return ['background-color: lightgreen' if v>iv else 'background-color: salmon'
-                    for v, iv in zip(val, indval)]
+        # 4) QoQ Change (only for EPS Growth)
+        df_display['Change vs Prev Qtr'] = ""
+        mask = df_display['Metric']=="EPS Growth QoQ (%)"
+        df_display.loc[mask, 'Change vs Prev Qtr'] = (
+            df_display.loc[mask, 'Company'].round(2).astype(str) + '%'
+        )
+
+        # 5) conditional highlighting
+        def highlight(v, ind):
+            return 'background-color: lightgreen' if (pd.notna(v) and v > ind) else 'background-color: salmon'
 
         styled = (
-          df.style
-            .format({ 'Company': "{:,.2f}", 'Industry Avg': "{:,.2f}" })
-            .apply(lambda row: color_row([row['Company']], [row['Industry Avg']]), axis=1, subset=['Company'])
+            df_display.style
+              .format({
+                  'Company':      "{:,.2f}",
+                  'Industry Avg': "{:,.2f}"
+              })
+              .apply(
+                  lambda row: [highlight(row['Company'], row['Industry Avg'])],
+                  axis=1,
+                  subset=['Company']
+              )
         )
-        st.table(styled)
 
-        # 7) bar chart with industry avg overlay
+        # 6) show it
+        st.dataframe(styled)
+
+        # 7) bar chart on the same 4 rows
         fig = go.Figure()
         fig.add_trace(go.Bar(
-            x=df['Metric'], y=df['Company'],
-            name=ticker
+            x=df_display['Metric'], y=df_display['Company'], name=ticker
         ))
         fig.add_trace(go.Bar(
-            x=df['Metric'], y=df['Industry Avg'],
-            name=f"{industry} Avg"
+            x=df_display['Metric'], y=df_display['Industry Avg'], name=f"{industry} Avg"
         ))
         fig.update_layout(
             barmode='group',
-            title=f"{ticker} vs {industry} Averages",
+            title=f"{ticker} vs {industry} Averages (last 4)",
             xaxis_tickangle=-45,
             margin=dict(t=50, b=150)
         )
         st.plotly_chart(fig, use_container_width=True)
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
