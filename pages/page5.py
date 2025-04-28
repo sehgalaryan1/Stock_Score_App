@@ -1,7 +1,7 @@
 import streamlit as st
 
 def main():
-    st.title("Limitations & Next Steps")
+    st.title("📚 Limitations & Next Steps")
 
     # Limitations section
     st.header("Limitations")
