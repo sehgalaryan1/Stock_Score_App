@@ -81,6 +81,25 @@ def main():
         # Big header (ticker only)
         st.header(f"📊 {ticker}")
 
+        # Calculate & display the 2-year Annual Sharpe ratio
+        try:
+            # 1) Compute true monthly returns
+            #    use (1+daily_ret).prod()−1 to get a single monthly return
+            daily_ret = df["Close"].pct_change().dropna()
+            monthly_ret = (
+                (1 + daily_ret)
+                .resample("M")
+                .agg(lambda x: x.prod() - 1)
+            )
+
+            # 2) Sharpe = mean / std  (no risk-free assumed)
+            sharpe = monthly_ret.mean() / monthly_ret.std() * (12**0.5)
+
+            st.subheader("Sharpe Ratio (monthly over 2 yr)")
+            st.write(f"**{sharpe:.2f}**")
+        except Exception as e:
+            st.error(f"Error computing Sharpe Ratio: {e}")
+
         # Monthly Returns
         st.subheader("Monthly Returns")
         try:
