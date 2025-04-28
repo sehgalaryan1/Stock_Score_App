@@ -5,7 +5,7 @@ An interactive, multi-page Streamlit dashboard that combines fundamental and tec
 ---
 
 ## 🚀 Live App  
-[Launch StockScore App](#)  
+[Launch StockScore App](https://stockscoreapp-4jbsnyaykawmponh76wn3s.streamlit.app/)  
 
 ---
 
