@@ -1,7 +1,8 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
-import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 
 def main():
     st.title("📈 Technical Analysis")
@@ -24,28 +25,26 @@ def main():
         df["Date"] = pd.to_datetime(df["Date"])
         df.set_index("Date", inplace=True)
 
-        # --- Closing Price Chart (6 months only) ---
-        st.subheader(f"📈 {ticker} Closing Price (Last 6 Months)")
-        df_6m = df.last('6M')
-        st.line_chart(df_6m["Close"])
+        # --- Calculate monthly returns ---
+        daily_ret = df["Close"].pct_change().dropna()
+        monthly_returns = daily_ret.resample('M').sum()
 
-        # --- Monthly Return Line Chart (2 years) ---
+        # --- Plot with Y-axis in percentage ---
         st.subheader(f"📊 {ticker} Monthly Returns (Last 2 Years)")
 
-        try:
-            # 1. Calculate daily return
-            daily_ret = df["Close"].pct_change().dropna()
+        fig, ax = plt.subplots(figsize=(10, 5))
+        ax.plot(monthly_returns.index, monthly_returns.values)
 
-            # 2. Resample to monthly returns
-            monthly_returns = daily_ret.resample('M').sum()
+        ax.set_ylabel("Monthly Return (%)")
+        ax.set_title(f"{ticker} Monthly Returns", fontsize=16)
 
-            if not monthly_returns.empty:
-                st.line_chart(monthly_returns)
-            else:
-                st.write("No monthly returns data available.")
+        # 여기 추가: Y축 퍼센트 포맷 적용
+        ax.yaxis.set_major_formatter(mtick.PercentFormatter(1.0))  # 1.0을 100%로
 
-        except Exception as e:
-            st.error(f"Error calculating monthly returns: {e}")
+        plt.xticks(rotation=45)
+        plt.grid(True)
+
+        st.pyplot(fig)
 
 if __name__ == "__main__":
     main()
