@@ -72,9 +72,9 @@ elif choice == "Model & Rating Explanation":
 elif choice == "Limitations & Next Steps":
     page5.main()
 
-# --- QR Code fixed at bottom-left of sidebar ---
+# --- QR Code fixed at bottom-left of sidebar (original size) ---
 url = "https://your-website.com"
-qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={url}&size=200x200"
+qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={url}&size=150x150"
 
 st.sidebar.markdown(
     f"""
@@ -82,9 +82,9 @@ st.sidebar.markdown(
         position: fixed;
         bottom: 20px;
         left: 10px;
-        width: 200px;
+        width: 150px;
         text-align: left;
-        ">
+    ">
       <img src="{qr_api}" alt="QR code" style="width:100%; height:auto;"/>
       <p style="
         font-size: 12px;
