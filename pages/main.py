@@ -42,7 +42,7 @@ We combine:
 - **Fundamental Analysis**: Deep dive into company financials  
 - **Technical Analysis**: Price action and momentum indicators  
 
-…and deliver a clear **0–10 Investment Rating** so you can decide at a glance.
+…and deliver a clear **1–10 Investment Rating** so you can decide at a glance.
 
 ---
 ### 🧠 How It Works  
