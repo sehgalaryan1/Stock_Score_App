@@ -137,21 +137,25 @@ def main():
             df_display.loc[mask, 'Company'].round(2).astype(str) + '%'
         )
 
-        # 5) conditional highlighting
-        def highlight(v, ind):
-            return 'background-color: lightgreen' if (pd.notna(v) and v > ind) else 'background-color: salmon'
-
+        def style_row(row):
+            # make a list of "" for every column
+            styles = [""] * len(row)
+            # find the position of the "Company" column
+            idx = list(row.index).index("Company")
+            # apply your green/red logic
+            if pd.notna(row["Company"]) and row["Company"] > row["Industry Avg"]:
+                styles[idx] = "background-color: lightgreen"
+            else:
+                styles[idx] = "background-color: salmon"
+            return styles
+        
         styled = (
             df_display.style
               .format({
                   'Company':      "{:,.2f}",
                   'Industry Avg': "{:,.2f}"
               })
-              .apply(
-                  lambda row: [highlight(row['Company'], row['Industry Avg'])],
-                  axis=1,
-                  subset = ['Company']
-              )
+              .apply(style_row, axis=1)
         )
 
         # 6) show it
