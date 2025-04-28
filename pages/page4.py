@@ -12,12 +12,14 @@ def load_models():
     scaler     = joblib.load("model/minmax_scaler.pkl")
     return fund_model, tech_model, scaler
 
-# Cache fundamental info for 1 hour\ n@st.cache_data(ttl=3600)
+# Cache fundamental info
+@st.cache_data(ttl=3600)
 def get_info(ticker):
     tk = yf.Ticker(ticker)
     return tk.info
 
-# Cache price history for 1 hour\ n@st.cache_data(ttl=3600)
+# Cache price history
+@st.cache_data(ttl=3600)
 def get_history(ticker):
     return yf.download(ticker, period="1y", interval="1d", progress=False)
 
@@ -26,14 +28,14 @@ def main():
     st.title("🤖 Model & Rating Explanation")
 
     # --- Live Example: always on top ---
-    st.header("🔍 Live Example")
+    st.header("Live Example")
     ticker = st.text_input("Enter Stock Ticker", "AAPL").upper()
     fund_weight = st.slider("Fundamental Weight (%)", 0, 100, 50)
     tech_weight = 100 - fund_weight
     st.write(f"**Fundamental:** {fund_weight}%   |   **Technical:** {tech_weight}%")
 
     if st.button("Run Analysis"):
-        # --- Fetch and process data & run models in one spinner ---
+        # Fetch data and run models
         with st.spinner("Fetching data and running models…"):
             try:
                 info = get_info(ticker)
@@ -108,13 +110,13 @@ def main():
                 0, 10
             )
 
-        # --- Display breakdown immediately ---
+        # Display breakdown immediately
         st.subheader("📈 Rating Breakdown")
         st.write(f"- Fundamental Score: **{fund_score:.2f} / 10**")
         st.write(f"- Technical Score: **{tech_score:.2f} / 10**")
         st.write(f"- **Combined Investment Rating: {final_score:.2f} / 10**")
 
-        # --- Explanatory Sections below breakdown ---
+        # Explanatory sections below
         st.divider()
         st.header("How It Works")
         st.markdown("""
