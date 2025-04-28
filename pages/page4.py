@@ -3,7 +3,6 @@ import joblib
 import numpy as np
 import pandas as pd
 import yfinance as yf
-import plotly.graph_objects as go
 
 @st.cache_resource
 def load_models():
@@ -15,48 +14,7 @@ def load_models():
 def main():
     st.title("🤖 Model & Rating Explanation")
 
-    st.header("How It Works")
-    st.markdown("""
-- **Fundamental Data**: WRDS Compustat (Jan 2015 – Dec 2024) containing 8,612 rows and using financial metrics like current assets, net income, liabilities, etc.
-- **Technical Data**: Real-time prices & indicators from Yahoo Finance (monthly return, volatility, moving averages, etc.) containing 26,105 rows.
-- **Models**: Two separate scikit-learn pipelines:
-    - Fundamental model predicts a Piotroski F-score
-    - Technical model predicts a Sharpe ratio
-
-These are combined via user-chosen weights into a final **1–10 Investment Rating**.
-    """)
-
-    st.divider()
-
-    st.header("📚 Inputs & Targets")
-    st.markdown("""
-- **Fundamental Features** (18 numeric + 1 categorical):  
-  current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, price_low_quarter, gics_sector_x
-
-- **Technical Features** (7 numeric + 1 categorical):  
-  monthly_return, month_trading_volume, stdev, avg_ret_6m, avg_ret_12m, vol_6m, vol_12m, gics_sector_x
-
-- **Targets**:
-    - Fundamental → f_score (Piotroski)
-    - Technical → sharpe_ratio
-    """)
-
-    st.divider()
-
-    st.header("What the Investment Rating Means")
-    st.markdown("""
-- **1–3 → Risky Investment** 🔴  
-  Higher risk, consider selling or avoiding.
-
-- **3–6 → Moderate Investment** 🟡  
-  Balanced risk, hold or monitor closely.
-
-- **6–10 → Safer Investment** 🟢  
-  Lower risk, consider buying.
-    """)
-
-    st.divider()
-
+    # --- Live Example: always on top ---
     st.header("🔍 Live Example: Run Models on a Ticker")
     ticker = st.text_input("Enter Stock Ticker", "AAPL").upper()
     fund_weight = st.slider("Fundamental Weight (%)", 0, 100, 50)
@@ -66,7 +24,47 @@ These are combined via user-chosen weights into a final **1–10 Investment Rati
     if st.button("Run Analysis"):
         st.info("Fetching live data and running models…")
 
-        # Fetch live fundamentals
+        # --- Explanation Sections ---
+        st.header("How It Works")
+        st.markdown("""
+- **Fundamental Data**: WRDS Compustat (Jan 2015 – Dec 2024) containing 8,612 rows and using financial metrics like current assets, net income, liabilities, etc.
+- **Technical Data**: Real-time prices & indicators from Yahoo Finance (monthly return, volatility, moving averages, etc.) containing 26,105 rows.
+- **Models**: Two separate scikit-learn pipelines:
+    - Fundamental model predicts a Piotroski F-score
+    - Technical model predicts a Sharpe ratio
+
+These are combined via user-chosen weights into a final **1–10 Investment Rating**.
+        """)
+        st.divider()
+
+        st.header("📚 Inputs & Targets")
+        st.markdown("""
+- **Fundamental Features** (18 numeric + 1 categorical):  
+  current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, price_low_quarter, gics_sector_x
+
+- **Technical Features** (7 numeric + 1 categorical):  
+  monthly_return, month_trading_volume, stdev, avg_ret_6m, avg_ret_12m, vol_6m, vol_12m, gics_sector_x
+
+- **Targets**:
+    - Fundamental → f_score (Piotroski)
+    - Technical → sharpe_ratio
+        """)
+        st.divider()
+
+        st.header("What the Investment Rating Means")
+        st.markdown("""
+- **1–3 → Risky Investment** 🔴  
+  Higher risk, consider selling or avoiding.
+
+- **3–6 → Moderate Investment** 🟡  
+  Balanced risk, hold or monitor closely.
+
+- **6–10 → Safer Investment** 🟢  
+  Lower risk, consider buying.
+        """)
+        st.divider()
+
+        # --- Fetch live fundamentals ---
         tk = yf.Ticker(ticker)
         try:
             info = tk.info
@@ -108,7 +106,7 @@ These are combined via user-chosen weights into a final **1–10 Investment Rati
         }
         df_f = pd.DataFrame([fund_data], columns=fund_num_cols + fund_cat_cols)
 
-        # Fetch live technicals
+        # --- Fetch live technicals ---
         hist = yf.download(ticker, period="1y", interval="1d", progress=False)
         if hist is None or hist.empty:
             st.error("No price history found.")
@@ -133,60 +131,21 @@ These are combined via user-chosen weights into a final **1–10 Investment Rati
         }
         df_t = pd.DataFrame([tech_data], columns=tech_num_cols + tech_cat_cols)
 
-        # Run predictions
+        # --- Run predictions ---
         fund_model, tech_model, scaler = load_models()
         raw_tech = tech_model.predict(df_t)[0]
         raw_fund = fund_model.predict(df_f)[0]
         tech_score, fund_score = scaler.transform([[raw_tech, raw_fund]])[0]
-        
+
         final_score = (fund_score * fund_weight/100) + (tech_score * tech_weight/100)
         final_score = np.clip(final_score, 0, 10)
 
-        # Display breakdown
+        # --- Display breakdown ---
         st.subheader("📈 Rating Breakdown")
         st.write(f"- Fundamental Score: **{fund_score:.2f} / 10**")
         st.write(f"- Technical Score: **{tech_score:.2f} / 10**")
         st.write(f"- **Combined Investment Rating: {final_score:.2f} / 10**")
 
-        st.divider()
-
-        # Feature importances if available
-        st.subheader("🔎 Feature Importances")
-        if hasattr(fund_model, "feature_importances_"):
-            imp = fund_model.feature_importances_
-            df_imp = pd.DataFrame({
-                "feature": fund_num_cols,
-                "importance": imp[:len(fund_num_cols)]
-            }).sort_values("importance", ascending=False)
-            fig = go.Figure(go.Bar(
-                x=df_imp["importance"],
-                y=df_imp["feature"],
-                orientation="h",
-                text=df_imp["importance"].map(lambda v: f"{v:.3f}"),
-                textposition="auto"
-            ))
-            fig.update_layout(title="Fundamental Model Importances", yaxis_title="", margin=dict(l=150))
-            st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.write("Fundamental model does not expose feature_importances_.")
-
-        if hasattr(tech_model, "feature_importances_"):
-            imp = tech_model.feature_importances_
-            df_imp = pd.DataFrame({
-                "feature": tech_num_cols,
-                "importance": imp[:len(tech_num_cols)]
-            }).sort_values("importance", ascending=False)
-            fig = go.Figure(go.Bar(
-                x=df_imp["importance"],
-                y=df_imp["feature"],
-                orientation="h",
-                text=df_imp["importance"].map(lambda v: f"{v:.3f}"),
-                textposition="auto"
-            ))
-            fig.update_layout(title="Technical Model Importances", yaxis_title="", margin=dict(l=150))
-            st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.write("Technical model does not expose feature_importances_.")
-
 if __name__ == "__main__":
     main()
+
