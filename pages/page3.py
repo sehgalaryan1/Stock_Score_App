@@ -25,14 +25,14 @@ def main():
         df.set_index("Date", inplace=True)
 
         # ---- Main Section Title ----
-        st.header(f"📊 {ticker} Technical Metrics (Last 2 Years)")
+        st.markdown(f"## 📊 {ticker} Technical Metrics (Last 2 Years)")
 
         # --- Monthly Return ---
         try:
             daily_ret = df["Close"].pct_change().dropna()
             monthly_returns = daily_ret.resample('M').sum()
 
-            st.subheader("Monthly Return")
+            st.markdown("### 🔷 Monthly Return")
             if not monthly_returns.empty:
                 st.line_chart(monthly_returns)
             else:
@@ -45,7 +45,7 @@ def main():
         try:
             monthly_volume = df['Volume'].resample('M').sum()
 
-            st.subheader("Monthly Trading Volume")
+            st.markdown("### 🔷 Monthly Trading Volume")
             if not monthly_volume.empty:
                 st.line_chart(monthly_volume)
             else:
@@ -59,7 +59,7 @@ def main():
             daily_ret = df["Close"].pct_change().dropna()
             rolling_volatility = daily_ret.rolling(window=30).std()
 
-            st.subheader("30-Day Rolling Volatility")
+            st.markdown("### 🔷 30-Day Rolling Volatility")
             if not rolling_volatility.empty:
                 st.line_chart(rolling_volatility)
             else:
@@ -75,7 +75,7 @@ def main():
             rolling_std = daily_ret.rolling(window=30).std()
             rolling_sharpe = rolling_mean / rolling_std
 
-            st.subheader("30-Day Rolling Sharpe Ratio")
+            st.markdown("### 🔷 30-Day Rolling Sharpe Ratio")
             if not rolling_sharpe.empty:
                 st.line_chart(rolling_sharpe)
             else:
