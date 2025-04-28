@@ -53,7 +53,7 @@ to generate a **1–10 investment rating** based on:
 
 ---
 ### 🧠 How It Works  
-- We pull historical financial data from WRDS Compustat (2000–2024) to assess fundamentals.  
+- We pull historical financial data from WRDS Compustat (Jan 2015 – Dec 2024) to assess fundamentals.  
 - We fetch real-time price and indicator data via the Yahoo Finance API to capture market sentiment.  
 - A hybrid ML system (logistic regression, decision trees, rule-based logic) blends these into a final risk score.
 
