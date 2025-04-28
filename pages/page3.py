@@ -122,16 +122,7 @@ def main():
             .rename(columns={'index': 'Metric'})
         )
         df.index = df.index + 1
-
-        # **SHOW ALL 6** metrics now, not just tail(4)
         df_display = df.copy()
-
-        # QoQ change only for EPS Growth
-        df_display['Change vs Prev Qtr'] = ""
-        mask = df_display['Metric']=="EPS Growth QoQ (%)"
-        df_display.loc[mask, 'Change vs Prev Qtr'] = (
-            df_display.loc[mask, 'Company'].round(2).astype(str) + '%'
-        )
 
         # conditional styling
         def style_row(row):
