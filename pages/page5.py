@@ -29,7 +29,6 @@ def main():
 **Disclaimer:**  
 This tool is provided **“as-is”** for educational purposes. Always conduct your own due diligence and consult a financial advisor before making investment decisions.
 
----
 """)
 
 if __name__ == "__main__":
