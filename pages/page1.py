@@ -65,30 +65,39 @@ def main():
         }
         df_f = pd.DataFrame([fund_data], columns=fund_num_cols + fund_cat_cols)
 
-        # --- Fetch technicals ---
-        hist = yf.download(ticker, period="1y", interval="1d", progress=False)
+        # --- Fetch technicals (monthly version) ---
+        hist = yf.download(ticker, period="3y", interval="1d", progress=False)
         if hist is None or hist.empty:
             st.error("No price history found.")
             return
-        daily_ret = hist['Close'].pct_change().dropna()
-
-        tech_num_cols = [
-            'monthly_return','month_trading_volume','stdev',
-            'avg_ret_6m','avg_ret_12m','vol_6m','vol_12m'
-        ]
-        tech_cat_cols = ['gics_sector_x']
-
+        
+        # 1) build a monthly close & volume series
+        monthly_close  = hist['Close'].resample('M').last()
+        monthly_volume = hist['Volume'].resample('M').sum()
+        
+        # 2) true monthly % return (×100 to match training)
+        monthly_ret = monthly_close.pct_change() * 100
+        
+        # 3) rolling‐window features on monthly_ret
+        avg_ret_6m  = monthly_ret.rolling(window=6,  min_periods=1).mean()
+        avg_ret_12m = monthly_ret.rolling(window=12, min_periods=1).mean()
+        vol_6m      = monthly_ret.rolling(window=6,  min_periods=1).std()
+        vol_12m     = monthly_ret.rolling(window=12, min_periods=1).std()
+        
+        # 4) one‐off stats
         tech_data = {
-            'monthly_return': daily_ret.resample('M').sum().iloc[-1],
-            'month_trading_volume': hist['Volume'].resample('M').sum().iloc[-1],
-            'stdev': daily_ret.std(),
-            'avg_ret_6m': daily_ret.rolling(window=126, min_periods=1).mean().iloc[-1],
-            'avg_ret_12m': daily_ret.rolling(window=252, min_periods=1).mean().iloc[-1],
-            'vol_6m': daily_ret.rolling(window=126, min_periods=1).std().iloc[-1],
-            'vol_12m': daily_ret.rolling(window=252, min_periods=1).std().iloc[-1],
-            'gics_sector_x': info.get('sector', 'Unknown')
+            'monthly_return':    monthly_ret.iloc[-1],
+            'month_trading_volume': monthly_volume.iloc[-1],
+            'stdev':             monthly_ret.std(),       # overall σ of monthly returns
+            'avg_ret_6m':        avg_ret_6m.iloc[-1],
+            'avg_ret_12m':       avg_ret_12m.iloc[-1],
+            'vol_6m':            vol_6m.iloc[-1],
+            'vol_12m':           vol_12m.iloc[-1],
+            'gics_sector_x':     info.get('sector', 'Unknown')
         }
+        
         df_t = pd.DataFrame([tech_data], columns=tech_num_cols + tech_cat_cols)
+
 
         # --- Predict ---
         fund_model, tech_model, scaler = load_models()
