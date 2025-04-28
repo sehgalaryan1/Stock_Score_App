@@ -67,7 +67,7 @@ def main():
     )
 
     if st.button("Show Technical Metrics"):
-        with st.spinner(f"Loading 2 years of data for {ticker}…"):
+        with st.spinner(f"Loading data for {ticker}…"):
             df = yf.download(ticker, period="2y", interval="1d", progress=False)
 
         if df is None or df.empty:
@@ -78,8 +78,8 @@ def main():
         df["Date"] = pd.to_datetime(df["Date"])
         df.set_index("Date", inplace=True)
 
-        # Big header
-        st.header(f"📊 {ticker} (Last 2 Years)")
+        # Big header (ticker only)
+        st.header(f"📊 {ticker}")
 
         # Monthly Returns
         st.subheader("Monthly Returns")
@@ -128,4 +128,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
