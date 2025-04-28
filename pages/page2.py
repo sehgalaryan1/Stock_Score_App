@@ -62,7 +62,7 @@ def main():
     ticker = st.selectbox(
         "Select Stock Ticker",
         options=tickers,
-        index=tickers.index('AAPL'),
+        index=tickers.index('MSFT'),
         help="Start typing to filter…"
     )
 
