@@ -100,7 +100,7 @@ def main():
         final_score = np.clip(final_score, 0, 10)
 
         # --- Display rating (higher = safer) ---
-        st.success(f"📊 **Investment Rating: {final_score:.2f} / 10** (higher = safer)")
+        st.success(f"📊 **Investment Rating: {final_score:.2f} / 10** ")
 
         if final_score < 3:
             st.write("🔴 **Risky Investment**")
