@@ -125,17 +125,8 @@ def main():
         )
         df.index = df.index + 1
 
-        # ───────────────────────────────────────────────────
         # NEW: only keep last 4 rows to speed up styling & avoid the earlier error
         df_display = df.tail(4).copy()
-        # ───────────────────────────────────────────────────
-
-        # 4) QoQ Change (only for EPS Growth)
-        df_display['Change vs Prev Qtr'] = ""
-        mask = df_display['Metric']=="EPS Growth QoQ (%)"
-        df_display.loc[mask, 'Change vs Prev Qtr'] = (
-            df_display.loc[mask, 'Company'].round(2).astype(str) + '%'
-        )
 
         def style_row(row):
             styles = [""] * len(row)
@@ -149,12 +140,12 @@ def main():
             if pd.notna(row["Company"]) and pd.notna(row["Industry Avg"]):
                 if metric in lower_is_better:
                     if row["Company"] < row["Industry Avg"]:
-                        styles[idx] = "background-color: green"
+                        styles[idx] = "background-color: lightgreen"
                     else:
                         styles[idx] = "background-color: salmon"
                 else:
                     if row["Company"] > row["Industry Avg"]:
-                        styles[idx] = "background-color: green"
+                        styles[idx] = "background-color: lightgreen"
                     else:
                         styles[idx] = "background-color: salmon"
                         
