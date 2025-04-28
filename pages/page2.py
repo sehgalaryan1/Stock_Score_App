@@ -33,10 +33,7 @@ def main():
         st.subheader(f"📊 {ticker} Monthly Returns (Last 2 Years)")
 
         try:
-            # 1. Calculate daily return
             daily_ret = df["Close"].pct_change().dropna()
-
-            # 2. Resample to monthly returns
             monthly_returns = daily_ret.resample('M').sum()
 
             if not monthly_returns.empty:
@@ -61,12 +58,11 @@ def main():
         except Exception as e:
             st.error(f"Error calculating monthly volume: {e}")
 
-        # --- NEW: 30-Day Rolling Volatility Chart (2 years) ---
+        # --- 30-Day Rolling Volatility Chart (2 years) ---
         st.subheader(f"📊 {ticker} 30-Day Rolling Volatility (Last 2 Years)")
 
         try:
             daily_ret = df["Close"].pct_change().dropna()
-
             rolling_volatility = daily_ret.rolling(window=30).std()
 
             if not rolling_volatility.empty:
@@ -76,6 +72,25 @@ def main():
 
         except Exception as e:
             st.error(f"Error calculating volatility: {e}")
+
+        # --- ✨ NEW: 30-Day Rolling Sharpe Ratio Chart (2 years) ---
+        st.subheader(f"📊 {ticker} 30-Day Rolling Sharpe Ratio (Last 2 Years)")
+
+        try:
+            daily_ret = df["Close"].pct_change().dropna()
+            # Assume risk-free rate is ~0% daily for simplicity
+            rolling_mean = daily_ret.rolling(window=30).mean()
+            rolling_std = daily_ret.rolling(window=30).std()
+
+            rolling_sharpe = rolling_mean / rolling_std
+
+            if not rolling_sharpe.empty:
+                st.line_chart(rolling_sharpe)
+            else:
+                st.write("No Sharpe Ratio data available.")
+
+        except Exception as e:
+            st.error(f"Error calculating Sharpe Ratio: {e}")
 
 if __name__ == "__main__":
     main()
