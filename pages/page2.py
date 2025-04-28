@@ -97,7 +97,7 @@ def main():
             sharpe = float(raw_sharpe)
             
             st.subheader("Sharpe Ratio (monthly over 2 yr)")
-            st.write(f"## {sharpe:.2f}")
+            st.write(f"### {sharpe:.2f}")
         except Exception as e:
             st.error(f"Error computing Sharpe Ratio: {e}")
 
