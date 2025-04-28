@@ -24,11 +24,6 @@ def main():
         df["Date"] = pd.to_datetime(df["Date"])
         df.set_index("Date", inplace=True)
 
-        # --- Closing Price Chart (6 months only) ---
-        st.subheader(f"📈 {ticker} Closing Price (Last 6 Months)")
-        df_6m = df.last('6M')
-        st.line_chart(df_6m["Close"])
-
         # --- Monthly Return Line Chart (2 years) ---
         st.subheader(f"📊 {ticker} Monthly Returns (Last 2 Years)")
 
@@ -73,12 +68,11 @@ def main():
         except Exception as e:
             st.error(f"Error calculating volatility: {e}")
 
-        # --- ✨ NEW: 30-Day Rolling Sharpe Ratio Chart (2 years) ---
+        # --- 30-Day Rolling Sharpe Ratio Chart (2 years) ---
         st.subheader(f"📊 {ticker} 30-Day Rolling Sharpe Ratio (Last 2 Years)")
 
         try:
             daily_ret = df["Close"].pct_change().dropna()
-            # Assume risk-free rate is ~0% daily for simplicity
             rolling_mean = daily_ret.rolling(window=30).mean()
             rolling_std = daily_ret.rolling(window=30).std()
 
