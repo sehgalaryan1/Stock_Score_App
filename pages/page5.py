@@ -13,7 +13,7 @@ def main():
   These are combined via user-chosen weights into a final **0–10 Investment Rating**.
 
 ### What the Investment Rating Means
-- **0–3 → Risky Investment** 🔴  
+- **1–3 → Risky Investment** 🔴  
   Higher risk, consider selling or avoiding.
 - **4–5 → Moderate Investment** 🟡  
   Balanced risk, hold or monitor closely.
