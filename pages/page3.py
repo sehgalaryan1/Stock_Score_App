@@ -149,7 +149,8 @@ def main():
               })
               .apply(
                   lambda row: [highlight(row['Company'], row['Industry Avg'])],
-                  axis=1
+                  axis=1,
+                  subset = ['Company']
               )
         )
 
