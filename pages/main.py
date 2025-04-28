@@ -28,9 +28,9 @@ if choice == "Home":
     st.markdown("""
 ---
 ## 👥 Team Members
-- Aryan Sehgal  
-- Raskirt Bhatia  
-- Hyunjin Yu  
+- Aryan Sehgal
+- Hyunjin Yu 
+- Raskirt Bhatia   
 
 ---
 ### 📚 Introduction  
