@@ -8,12 +8,14 @@ def main():
     st.markdown("""
 - **Fundamental Data**: WRDS Compustat (Jan 2015 – Dec 2024) containing 8,612 rows and using financial metrics like current assets, net income, liabilities, etc.
 - **Technical Data**: Real-time prices & indicators from Yahoo Finance (monthly return, volatility, moving averages, etc.) containing 26,105 rows.
-- **Models**: Two separate scikit-learn pipelines
+- **Models**: Two separate scikit-learn pipelines:
     - Fundamental model predicts a Piotroski F-score
     - Technical model predicts a Sharpe ratio
 
 These are combined via user-chosen weights into a final **0–10 Investment Rating**.
     """)
+
+    st.divider()
 
     # --- Investment Rating Meaning Section ---
     st.header("What the Investment Rating Means")
@@ -27,6 +29,8 @@ These are combined via user-chosen weights into a final **0–10 Investment Rati
 - **6–10 → Safer Investment** 🟢  
   Lower risk, consider buying.
     """)
+
+    st.divider()
 
     # --- Inputs & Targets Section ---
     st.header("📚 Inputs & Targets")
