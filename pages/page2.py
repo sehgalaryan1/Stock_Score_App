@@ -2,8 +2,6 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mtick  # <- 퍼센트 표시용
 
 def main():
     st.title("📈 Technical Analysis")
@@ -42,16 +40,7 @@ def main():
             monthly_returns = daily_ret.resample('M').sum()
 
             if not monthly_returns.empty:
-                # 📈 Matplotlib 커스텀 차트 그리기
-                fig, ax = plt.subplots()
-                ax.plot(monthly_returns.index, monthly_returns.values, marker='o')
-                ax.set_ylabel('Monthly Return (%)')
-                ax.yaxis.set_major_formatter(mtick.PercentFormatter(1.0))  # 1.0 = 100%
-                ax.set_title(f"{ticker} Monthly Returns (Last 2 Years)")
-                plt.xticks(rotation=45)
-                plt.grid(True)
-                st.pyplot(fig)
-
+                st.line_chart(monthly_returns)
             else:
                 st.write("No monthly returns data available.")
 
