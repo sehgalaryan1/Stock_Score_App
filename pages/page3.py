@@ -19,7 +19,6 @@ def main():
             st.error("No data found. Check the ticker and try again.")
             return
 
-        # 날짜 포맷 정리
         df = df.reset_index()
         df["Date"] = pd.to_datetime(df["Date"])
         df.set_index("Date", inplace=True)
@@ -34,10 +33,11 @@ def main():
 
             st.markdown("### 🔷 Monthly Return")
             if not monthly_returns.empty:
-                st.line_chart(monthly_returns)
+                fig = go.Figure(go.Scatter(x=monthly_returns.index, y=monthly_returns.values, mode='lines'))
+                fig.update_layout(showlegend=False, margin=dict(t=10, b=10), height=300)
+                st.plotly_chart(fig, use_container_width=True)
             else:
                 st.write("No monthly returns data available.")
-
         except Exception as e:
             st.error(f"Error calculating monthly returns: {e}")
 
@@ -47,10 +47,11 @@ def main():
 
             st.markdown("### 🔷 Monthly Trading Volume")
             if not monthly_volume.empty:
-                st.line_chart(monthly_volume)
+                fig = go.Figure(go.Scatter(x=monthly_volume.index, y=monthly_volume.values, mode='lines'))
+                fig.update_layout(showlegend=False, margin=dict(t=10, b=10), height=300)
+                st.plotly_chart(fig, use_container_width=True)
             else:
                 st.write("No monthly volume data available.")
-
         except Exception as e:
             st.error(f"Error calculating monthly volume: {e}")
 
@@ -61,10 +62,11 @@ def main():
 
             st.markdown("### 🔷 30-Day Rolling Volatility")
             if not rolling_volatility.empty:
-                st.line_chart(rolling_volatility)
+                fig = go.Figure(go.Scatter(x=rolling_volatility.index, y=rolling_volatility.values, mode='lines'))
+                fig.update_layout(showlegend=False, margin=dict(t=10, b=10), height=300)
+                st.plotly_chart(fig, use_container_width=True)
             else:
                 st.write("No volatility data available.")
-
         except Exception as e:
             st.error(f"Error calculating volatility: {e}")
 
@@ -77,16 +79,16 @@ def main():
 
             st.markdown("### 🔷 30-Day Rolling Sharpe Ratio")
             if not rolling_sharpe.empty:
-                st.line_chart(rolling_sharpe)
+                fig = go.Figure(go.Scatter(x=rolling_sharpe.index, y=rolling_sharpe.values, mode='lines'))
+                fig.update_layout(showlegend=False, margin=dict(t=10, b=10), height=300)
+                st.plotly_chart(fig, use_container_width=True)
             else:
                 st.write("No Sharpe Ratio data available.")
-
         except Exception as e:
             st.error(f"Error calculating Sharpe Ratio: {e}")
 
 if __name__ == "__main__":
     main()
-
 # import streamlit as st
 # import yfinance as yf
 # import pandas as pd
