@@ -98,7 +98,7 @@ def main():
     tickers = load_ticker_list()
     ticker  = st.selectbox("Select or Type a Stock Ticker",
                           options=tickers,
-                          index=tickers.index("AAPL"))
+                          index=tickers.index("MSFT"))
 
     if st.button("Fetch Fundamentals"):
         st.info(f"Loading fundamentals for {ticker}…")
