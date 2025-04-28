@@ -96,7 +96,7 @@ def main():
             raw_sharpe = monthly_ret.mean() / monthly_ret.std() * (12**0.5)
             sharpe = float(raw_sharpe)
             
-            st.subheader(f"Sharpe Ratio (over past 2 yr): {sharpe:.2f}")
+            st.subheader(f"Sharpe Ratio : {sharpe:.2f}")
             
         except Exception as e:
             st.error(f"Error computing Sharpe Ratio: {e}")
