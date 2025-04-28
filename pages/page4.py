@@ -26,7 +26,7 @@ def main():
     st.title("🤖 Model & Rating Explanation")
 
     # --- Live Example: always on top ---
-    st.header("🔍 Live Example: Run Models on a Ticker")
+    st.header("🔍 Live Example")
     ticker = st.text_input("Enter Stock Ticker", "AAPL").upper()
     fund_weight = st.slider("Fundamental Weight (%)", 0, 100, 50)
     tech_weight = 100 - fund_weight
