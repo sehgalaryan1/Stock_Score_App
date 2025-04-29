@@ -11,14 +11,14 @@ def main():
 2. **Market Noise**  
   Technical indicators can mislead during volatile swings.
 3. **Model Assumptions**  
-  Random Forest and rule-based logic assume stationarity; may not capture sudden regime changes.
+  Random Forest assumes stationarity; may not capture sudden regime changes.
     """)
 
     # Next Steps section
     st.header("Next Steps")
     st.markdown("""
 - **Enrich Data Sources**  
-   Integrate additional fundamentals from WRDS and real-time news sentiment.  
+   Integrate real-time news sentiment.  
 - **Advanced Metrics**  
    Add Bollinger Bands, MACD crossovers, OBV heatmaps.  
 - **Explainability**  
