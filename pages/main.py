@@ -58,7 +58,7 @@ Investing doesn’t have to be overwhelming. Our tool brings together a company�
 …and delivers a clear **1–10 Investment Rating** so you can decide at a glance.
 
 ---
-### How It Works  
+### Behind the Ratings 
 1. Historical financials from WRDS Compustat (Jan 2015 – Dec 2024)  
 2. Live price and indicator data via Yahoo Finance  
 3. Blend of Random Forest Regressor 
