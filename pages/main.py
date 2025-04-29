@@ -12,11 +12,15 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Maintain current page in session state ---
+# Initialize page in session state
 if "page" not in st.session_state:
     st.session_state.page = "Home"
 
-# --- Sidebar Navigation ---
+# Callback to navigate
+def navigate_to(page_name):
+    st.session_state.page = page_name
+
+# Sidebar nav, bound to session_state.page
 st.sidebar.title("🔗 Navigation")
 st.sidebar.radio(
     "Go to",
@@ -31,7 +35,7 @@ st.sidebar.radio(
     key="page",
 )
 
-# --- Page Routing ---
+# Main routing
 if st.session_state.page == "Home":
     st.title("📊 Welcome to the Stock Advisory Tool")
     st.markdown("""
@@ -65,10 +69,9 @@ Investing doesn’t have to be overwhelming. Our tool brings together a company�
 3. Click **Compute Investment Rating**  
 4. Explore detailed charts, ratios, and explanations on other pages
 """)
-    # Call-to-action button that actually flips the sidebar radio
-    if st.button("Start Now"):
-        st.session_state.page = "Stock Input & Score"
-        st.experimental_rerun()
+
+    # 👉 Call-to-action button
+    st.button("Start Now", on_click=navigate_to, args=("Stock Input & Score",))
 
 elif st.session_state.page == "Stock Input & Score":
     page1.main()
@@ -85,7 +88,7 @@ elif st.session_state.page == "Model & Rating Explanation":
 elif st.session_state.page == "Limitations & Next Steps":
     page5.main()
 
-# --- QR Code fixed at bottom-left of sidebar (original size) ---
+# QR Code fixed at bottom-left of sidebar
 url = "https://stockscoreapp-4jbsnyaykawmponh76wn3s.streamlit.app/"
 encoded_url = urllib.parse.quote(url, safe='')
 qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={encoded_url}&size=150x150"
