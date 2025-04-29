@@ -36,9 +36,9 @@ def main():
     st.markdown("---")
 
     # New Methodology Files section
-    st.header("📁 Methodology Files from GitHub")
+    st.header("Methodology Files from GitHub")
     st.markdown("""
-View the core notebooks and code used in building this application:
+View the github repository linked to this application:
 
 [https://github.com/sehgalaryan1/Stock_Score_App](https://github.com/sehgalaryan1/Stock_Score_App)
     """)
