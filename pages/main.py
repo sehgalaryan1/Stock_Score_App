@@ -41,9 +41,10 @@ if st.session_state.page == "Home":
     st.markdown("""
 ---
 ## 👥 Team Members
+- Raskirt Bhatia  
 - Aryan Sehgal  
 - Hyunjin Yu  
-- Raskirt Bhatia  
+
 
 ---
 ### Introduction  
@@ -60,7 +61,7 @@ Investing doesn’t have to be overwhelming. Our tool brings together a company�
 ### How It Works  
 1. Historical financials from WRDS Compustat (Jan 2015 – Dec 2024)  
 2. Live price and indicator data via Yahoo Finance  
-3. Blend of Random Forest Regressor + rule-based logic
+3. Blend of Random Forest Regressor 
 
 ---
 ### Quick Start
