@@ -3,6 +3,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import yfinance as yf
+from urllib.parse import urlparse
 
 @st.cache_data
 def load_ticker_list():
@@ -10,7 +11,6 @@ def load_ticker_list():
         'MSFT', 'NVDA', 'GOOG', 'GOOGL', 'AMZN', 'META', 'AAPL','BRK.B', 'AVGO', 'TSLA',
         # …etc…
     ]
-    # drop duplicates, keep original order
     return list(dict.fromkeys(tickers))
 
 @st.cache_resource
@@ -23,7 +23,6 @@ def load_models():
 def main():
     st.title("Stock Input & Rating")
 
-    # ticker selector
     tickers = load_ticker_list()
     ticker  = st.selectbox(
         "Select Stock Ticker",
@@ -32,7 +31,6 @@ def main():
         help="Start typing to filter…"
     )
 
-    # weights
     fund_w = st.slider("Fundamental Weight (%)", 0, 100, 50)
     tech_w = 100 - fund_w
     st.markdown(f"**Fund:** {fund_w}%   |   **Tech:** {tech_w}%")
@@ -48,12 +46,19 @@ def main():
             st.error(f"Could not fetch fundamentals: {e}")
             return
 
-        # logo
+        # pick a logo URL
         logo_url = info.get("logo_url")
+        if not logo_url:
+            # fallback: use company website domain via Clearbit
+            website = info.get("website", "")
+            if website:
+                parsed = urlparse(website)
+                domain = parsed.netloc or parsed.path
+                logo_url = f"https://logo.clearbit.com/{domain}"
+
         if logo_url:
             st.image(logo_url, width=100)
 
-        # sector / industry
         sector   = info.get("sector",   "N/A")
         industry = info.get("industry", "N/A")
         st.write(f"**Sector:** {sector}   |   **Industry:** {industry}")
@@ -82,7 +87,7 @@ def main():
         }
         df_f = pd.DataFrame([fund_data])
 
-        # --- build df_t (technicals) with ALL expected cols ---
+        # --- build df_t (technicals) ---
         hist = yf.download(ticker, period="3y", interval="1d", progress=False)
         if hist.empty:
             st.error("No price history found.")
@@ -129,4 +134,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
