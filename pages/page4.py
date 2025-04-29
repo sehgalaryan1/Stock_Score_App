@@ -18,7 +18,7 @@ def main():
     st.header("📚 Inputs & Targets")
     st.markdown("""
 - **Fundamental Features** (18 numeric + 1 categorical):  
-  `current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, total_income_taxes, current_ratio, net_cash_flow_operating_activities, gics_sector_x`
+  `current_assets, total_assets, common_equity_total, … , dividends_per_share_quarter, total_income_taxes, profit_margin, net_cash_flow_operating_activities, current_ratio, gics_sector_x`
 
 - **Technical Features** (7 numeric + 1 categorical):  
   `monthly_return, month_trading_volume, stdev, avg_ret_6m, avg_ret_12m, vol_6m, vol_12m, gics_sector_x`
