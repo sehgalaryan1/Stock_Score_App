@@ -87,3 +87,46 @@ def main():
         if hist.empty:
             st.error("No price history found.")
             return
+
+        monthly_close  = hist["Close"].resample("M").last()
+        monthly_volume = hist["Volume"].resample("M").sum()
+        monthly_ret    = monthly_close.pct_change() * 100
+
+        tech_data = {
+            'monthly_return':        monthly_ret.iloc[-1],
+            'month_trading_volume':  monthly_volume.iloc[-1],
+            'stdev':                 monthly_ret.std(),
+            'avg_ret_6m':            monthly_ret.rolling(6,  min_periods=1).mean().iloc[-1],
+            'avg_ret_12m':           monthly_ret.rolling(12, min_periods=1).mean().iloc[-1],
+            'vol_6m':                monthly_ret.rolling(6,  min_periods=1).std().iloc[-1],
+            'vol_12m':               monthly_ret.rolling(12, min_periods=1).std().iloc[-1],
+            'gics_sector_x':         sector
+        }
+        df_t = pd.DataFrame([tech_data])
+
+        # --- predict & scale ---
+        fund_model, tech_model, scaler = load_models()
+        raw_tech = tech_model.predict(df_t)[0]
+        raw_fund = fund_model.predict(df_f)[0]
+        tech_score, fund_score = scaler.transform([[raw_tech, raw_fund]])[0]
+        combined_score = np.clip(
+            fund_score * fund_w/100 + tech_score * tech_w/100,
+            0, 10
+        )
+
+        # --- display results ---
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Technical Score",   f"{tech_score:.2f} / 10")
+        c2.metric("Fundamental Score", f"{fund_score:.2f} / 10")
+        c3.metric("Combined Score",    f"{combined_score:.2f} / 10")
+
+        if combined_score < 4:
+            st.write("🔴 **Risky**")
+        elif combined_score < 6:
+            st.write("🟡 **Moderate**")
+        else:
+            st.write("🟢 **Safer**")
+
+if __name__ == "__main__":
+    main()
+
