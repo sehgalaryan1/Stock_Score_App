@@ -12,20 +12,16 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Sidebar Navigation (with session_state key) ---
+# --- Sidebar Navigation ---
 st.sidebar.title("🔗 Navigation")
-choice = st.sidebar.radio(
-    "Go to",
-    [
-        "Home",
-        "Stock Input & Score",
-        "Technical Analysis",
-        "Fundamental Analysis",
-        "Model & Rating Explanation",
-        "Limitations & Next Steps",
-    ],
-    key="page"
-)
+choice = st.sidebar.radio("Go to", [
+    "Home",
+    "Stock Input & Score",
+    "Technical Analysis",
+    "Fundamental Analysis",
+    "Model & Rating Explanation",
+    "Limitations & Next Steps",
+])
 
 # --- Page Routing ---
 if choice == "Home":
@@ -61,10 +57,11 @@ Investing doesn’t have to be overwhelming. Our tool brings together a company�
 3. Click **Compute Investment Rating**  
 4. Explore detailed charts, ratios, and explanations on other pages
 """)
+
     # ——— Call to Action Button ———
-    if st.button("Start Now"):
-        st.session_state.page = "Stock Input & Score"
-        st.experimental_rerun()
+    if st.button("🚀 Start Now"):
+        page1.main()
+        st.stop()  # prevent the rest of Home from re-rendering
 
 elif choice == "Stock Input & Score":
     page1.main()
