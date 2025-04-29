@@ -4,6 +4,7 @@ import page2    # Technical Analysis page
 import page3    # Fundamental Analysis page
 import page4    # Model & Rating Explanation page
 import page5    # Limitations & Next Steps page
+import urllib.parse
 
 st.set_page_config(
     page_title="Stock Advisory Tool",
@@ -11,16 +12,20 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Sidebar Navigation ---
+# --- Sidebar Navigation (with session_state key) ---
 st.sidebar.title("🔗 Navigation")
-choice = st.sidebar.radio("Go to", [
-    "Home",
-    "Stock Input & Score",
-    "Technical Analysis",
-    "Fundamental Analysis",
-    "Model & Rating Explanation",
-    "Limitations & Next Steps",
-])
+choice = st.sidebar.radio(
+    "Go to",
+    [
+        "Home",
+        "Stock Input & Score",
+        "Technical Analysis",
+        "Fundamental Analysis",
+        "Model & Rating Explanation",
+        "Limitations & Next Steps",
+    ],
+    key="page"
+)
 
 # --- Page Routing ---
 if choice == "Home":
@@ -56,6 +61,10 @@ Investing doesn’t have to be overwhelming. Our tool brings together a company�
 3. Click **Compute Investment Rating**  
 4. Explore detailed charts, ratios, and explanations on other pages
 """)
+    # ——— Call to Action Button ———
+    if st.button("Start Now"):
+        st.session_state.page = "Stock Input & Score"
+        st.experimental_rerun()
 
 elif choice == "Stock Input & Score":
     page1.main()
@@ -73,8 +82,6 @@ elif choice == "Limitations & Next Steps":
     page5.main()
 
 # --- QR Code fixed at bottom-left of sidebar (original size) ---
-import urllib.parse
-
 url = "https://stockscoreapp-4jbsnyaykawmponh76wn3s.streamlit.app/"
 encoded_url = urllib.parse.quote(url, safe='')
 qr_api = f"https://api.qrserver.com/v1/create-qr-code/?data={encoded_url}&size=150x150"
