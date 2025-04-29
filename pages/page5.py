@@ -34,6 +34,16 @@ def main():
     """)
 
     st.markdown("---")
+
+    # New Methodology Files section
+    st.header("📁 Methodology Files from GitHub")
+    st.markdown("""
+View the core notebooks and code used in building this application:
+
+[https://github.com/sehgalaryan1/Stock_Score_App](https://github.com/sehgalaryan1/Stock_Score_App)
+    """)
+
+    st.markdown("---")
     st.markdown(
         "<span style='color:gray;'>**Disclaimer:** This tool is provided “as-is” for educational purposes. Always conduct your own due diligence and consult a financial advisor before making investment decisions.</span>",
         unsafe_allow_html=True
@@ -41,3 +51,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
