@@ -4,6 +4,18 @@ import yfinance as yf
 import pandas as pd
 import time
 
+st.write("🔍 Testing yfinance directly for MSFT…")
+try:
+    df_test = yf.download("MSFT", period="1mo", interval="1d")
+    st.write(df_test.head())
+    if df_test.empty:
+        st.warning("yfinance returned an EMPTY DataFrame for MSFT.")
+    else:
+        st.success("✅ yfinance returned data for MSFT.")
+except Exception as e:
+    st.error(f"⚠️ yfinance threw an error: {e}")
+
+
 @st.cache_data
 def load_ticker_list():
     tickers = [
