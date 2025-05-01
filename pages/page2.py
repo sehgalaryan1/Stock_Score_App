@@ -2,44 +2,15 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
-import time
-
-st.write("🔍 Testing yfinance directly for MSFT…")
-try:
-    df_test = yf.download("MSFT", period="1mo", interval="1d")
-    st.write(df_test.head())
-    if df_test.empty:
-        st.warning("yfinance returned an EMPTY DataFrame for MSFT.")
-    else:
-        st.success("✅ yfinance returned data for MSFT.")
-except Exception as e:
-    st.error(f"⚠️ yfinance threw an error: {e}")
-
 
 @st.cache_data
 def load_ticker_list():
     tickers = [
         'MSFT', 'NVDA', 'GOOG', 'GOOGL', 'AMZN', 'META', 'AAPL', 'BRK.B', 'AVGO', 'TSLA',
-        'WMT', 'LLY', 'JPM', 'V', 'UNH', 'MA', 'XOM', 'COST', 'NFLX', 'PG',
-        'ORCL', 'JNJ', 'HD', 'ABBV', 'KO', 'TMUS', 'BAC', 'PM', 'CRM', 'CVX',
-        # (truncated for brevity — keep your full list here)
+        # ... (your full list here)
         'WDFC', 'FTDR', 'HIW', 'TMDX', 'FBP', 'PRVA', 'UCB', 'ABM', 'FULT'
     ]
     return tickers
-
-def safe_yf_download(ticker, retries=3, delay=3):
-    yf_ticker = ticker.replace('.', '-')  # Fix dot to dash
-    for i in range(retries):
-        try:
-            df = yf.download(yf_ticker, period="2y", interval="1d", progress=False)
-            if df is not None and not df.empty:
-                return df
-        except Exception as e:
-            print(f"[Retry {i+1}] Error: {e}")
-        time.sleep(delay * (i + 1))
-    print(f"[ERROR] Failed to fetch data for {ticker}")
-    return pd.DataFrame()
-
 
 def main():
     st.title("📈 Technical Analysis")
@@ -54,7 +25,8 @@ def main():
 
     if st.button("Show Technical Metrics"):
         with st.spinner(f"Loading data for {ticker}…"):
-            df = safe_yf_download(ticker)
+            yf_ticker = ticker.replace('.', '-')  # Convert BRK.B → BRK-B
+            df = yf.Ticker(yf_ticker).history(period="2y", interval="1d")
 
         if df is None or df.empty:
             st.error("No data found. Check the ticker and try again.")
