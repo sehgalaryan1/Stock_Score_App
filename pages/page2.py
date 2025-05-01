@@ -1,16 +1,29 @@
 # pages/page2.py
 import streamlit as st
 import yfinance as yf
+from yfinance.exceptions import YFRateLimitError
 import pandas as pd
+import time
 
 @st.cache_data
 def load_ticker_list():
     tickers = [
         'MSFT', 'NVDA', 'GOOG', 'GOOGL', 'AMZN', 'META', 'AAPL', 'BRK.B', 'AVGO', 'TSLA',
-        # (rest of your full ticker list remains unchanged)
+        # ...(keep your full list here)...
         'WDFC', 'FTDR', 'HIW', 'TMDX', 'FBP', 'PRVA', 'UCB', 'ABM', 'FULT'
     ]
     return tickers
+
+def safe_history(ticker, retries=3, delay=3):
+    """Try yf.Ticker(ticker).history with retries on rate limits."""
+    for i in range(retries):
+        try:
+            return yf.Ticker(ticker).history(period="2y", interval="1d")
+        except YFRateLimitError:
+            time.sleep(delay * (i + 1))
+        except Exception:
+            break
+    return pd.DataFrame()
 
 def main():
     st.title("📈 Technical Analysis")
@@ -25,8 +38,17 @@ def main():
 
     if st.button("Show Technical Metrics"):
         with st.spinner(f"Loading data for {ticker}…"):
-            yf_ticker = ticker.replace('.', '-')  # Convert BRK.B → BRK-B
-            df = yf.Ticker(yf_ticker).history(period="2y", interval="1d")
+            yf_ticker = ticker.replace('.', '-')  # BRK.B → BRK-B
+            df = safe_history(yf_ticker)
+
+            # Fallback mock for MSFT if still empty
+            if df.empty and ticker == "MSFT":
+                st.warning("⚠️ Using mock data for MSFT due to rate limits.")
+                df = pd.DataFrame({
+                    "Date": pd.date_range(end=pd.Timestamp.today(), periods=60),
+                    "Close": pd.Series([280 + i*0.5 for i in range(60)]),
+                    "Volume": pd.Series([1e7] * 60)
+                }).set_index("Date")
 
         if df is None or df.empty:
             st.error("No data found. Check the ticker and try again.")
