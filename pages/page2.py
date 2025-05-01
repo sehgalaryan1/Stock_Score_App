@@ -7,7 +7,7 @@ import pandas as pd
 def load_ticker_list():
     tickers = [
         'MSFT', 'NVDA', 'GOOG', 'GOOGL', 'AMZN', 'META', 'AAPL', 'BRK.B', 'AVGO', 'TSLA',
-        # ... (your full list here)
+        # (rest of your full ticker list remains unchanged)
         'WDFC', 'FTDR', 'HIW', 'TMDX', 'FBP', 'PRVA', 'UCB', 'ABM', 'FULT'
     ]
     return tickers
