@@ -15,17 +15,19 @@ def load_ticker_list():
     ]
     return tickers
 
-# Retry wrapper for yf.download
 def safe_yf_download(ticker, retries=3, delay=3):
+    yf_ticker = ticker.replace('.', '-')  # Fix dot to dash
     for i in range(retries):
         try:
-            df = yf.download(ticker, period="2y", interval="1d", progress=False)
+            df = yf.download(yf_ticker, period="2y", interval="1d", progress=False)
             if df is not None and not df.empty:
                 return df
-        except Exception:
-            pass
-        time.sleep(delay * (i + 1))  # Exponential backoff
-    return pd.DataFrame()  # Return empty if all retries fail
+        except Exception as e:
+            print(f"[Retry {i+1}] Error: {e}")
+        time.sleep(delay * (i + 1))
+    print(f"[ERROR] Failed to fetch data for {ticker}")
+    return pd.DataFrame()
+
 
 def main():
     st.title("📈 Technical Analysis")
